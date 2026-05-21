@@ -79,8 +79,9 @@ def _validate_model_file(model_path: str) -> None:
     if size < 1024:
         raise ValueError(
             f"Model-Datei zu klein ({size} Bytes): {p.name}\n"
-            f"→ Das ist kein echtes trainiertes Model. Lege eine gültige .onnx Datei ab.\n"
-            f"→ Placeholder-Dateien aus der ZIP funktionieren nicht — du brauchst ein trainiertes Model."
+            f"→ Das ist eine Placeholder-Datei, kein echtes Modell.\n"
+            f"→ Lösung 1: DOWNLOAD_MODEL.bat ausführen (lädt YOLOv8n Basis-Modell).\n"
+            f"→ Lösung 2: Eigenes Modell mit TRAIN_MODEL.bat trainieren."
         )
     if p.suffix == ".onnx":
         # ONNX files start with valid protobuf — first byte is 0x0A or 0x08 or similar field tags

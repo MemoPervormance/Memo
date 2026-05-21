@@ -363,11 +363,14 @@ def _install_interception(driver_id: str, info: Dict[str, Any]) -> None:
     _set_progress(driver_id, "Downloading Interception…")
     tmp_dir = Path(tempfile.mkdtemp())
     zip_path = tmp_dir / "Interception.zip"
-    urllib.request.urlretrieve(info["url"], zip_path)
+    try:
+        urllib.request.urlretrieve(info["url"], zip_path)
+    except Exception as exc:
+        _set_progress(driver_id, f"error:Download fehlgeschlagen: {exc}")
+        return
     _set_progress(driver_id, "Extracting…")
     with zipfile.ZipFile(zip_path, "r") as zf:
         zf.extractall(tmp_dir)
-    # Find the installer executable
     installer_candidates = list(tmp_dir.rglob("install-interception.exe"))
     if not installer_candidates:
         installer_candidates = list(tmp_dir.rglob("*.exe"))
@@ -375,15 +378,22 @@ def _install_interception(driver_id: str, info: Dict[str, Any]) -> None:
         _set_progress(driver_id, "error:Installer nicht gefunden im Archiv.")
         return
     installer = installer_candidates[0]
-    _set_progress(driver_id, "Installiere Kernel-Treiber (Admin erforderlich)…")
+    _set_progress(driver_id, "Installiere Kernel-Treiber (UAC-Fenster erscheint)…")
+    # Must use ShellExecute runas — subprocess alone cannot write to system32\drivers
+    # PowerShell Start-Process -Verb RunAs forces UAC elevation even from non-admin shell
+    ps_cmd = (
+        f"$p = Start-Process -FilePath '{installer}' "
+        f"-ArgumentList '/install' -Verb RunAs -Wait -PassThru; exit $p.ExitCode"
+    )
     result = subprocess.run(
-        [str(installer), "/install"],
+        ["powershell", "-NoProfile", "-Command", ps_cmd],
         capture_output=True, text=True,
     )
     if result.returncode in (0, 3010):
-        _set_progress(driver_id, "done:reboot_required")
+        _set_progress(driver_id, "done:Neustart erforderlich!")
     else:
-        _set_progress(driver_id, f"error:{result.stderr.strip()[:200] or result.stdout.strip()[:200]}")
+        stderr = (result.stderr or result.stdout or "").strip()[:300]
+        _set_progress(driver_id, f"error:{stderr or f'Exit code {result.returncode}'}")
 
 
 def _install_zip_inf(driver_id: str, info: Dict[str, Any]) -> None:
