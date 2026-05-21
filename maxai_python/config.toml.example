@@ -1,0 +1,74 @@
+# MAX-AI  — config.toml example
+# Kopiere diese Datei als config.toml neben main.py
+
+[capture]
+monitor      = 0       # Monitor-Index (0 = Primär)
+capture_size = 320     # Crop-Größe in Pixeln (auto aus Modelldateiname)
+fps_limit    = 0       # Max-Framerate (0 = unbegrenzt)
+steady_fps   = 100     # Ziel-FPS im Loop
+
+[detection]
+model_path            = "model.onnx"   # Pfad zur ONNX-Modelldatei
+confidence_threshold  = 0.5
+nms_threshold         = 0.45
+target_classes        = []             # Leer = alle Klassen
+priority_classes      = []
+use_cuda              = true
+use_tensorrt          = false
+max_detections        = 10
+
+[aim]
+enabled        = true
+aim_key        = "mouse5"    # Taste gedrückt halten = Assist aktiv
+toggle_key     = "f6"        # Assist ein/aus schalten
+exit_key       = "f12"       # Loop beenden
+fov_radius     = 200.0       # Suchradius in Pixel
+aim_smoothness = 1           # 1 = direkt, höher = weicher
+aim_speed      = 0.001
+head_from_top  = 0.10        # Zielanker: 0.10 = oberer Rand (Kopf)
+snap_zone_px   = 22.0        # Innerhalb dieser Zone reduzierte Smoothness
+
+[aim.prediction]
+enabled       = true
+lead_factor   = 80.0
+min_speed     = 30.0
+max_offset    = 25.0
+lead_max_jump = 120.0
+
+[controller]
+# Bei relative_mouse-Backend als mouse_* interpretiert
+stick_sensitivity  = 0.75
+stick_deadzone_px  = 1.0
+stick_smoothing    = 0.35
+stick_acceleration = 1.4
+stick_y_invert     = true
+stick_x_invert     = false
+rs_min_magnitude   = 0.16    # Minimale Bewegungsschwelle
+lt_while_aim       = false   # ADS (Rechtsklick) während Assist halten
+
+[crosshair]
+offset_x   = 0.0
+offset_y   = 0.0
+parallax_x = 0.0
+parallax_y = 0.0
+
+[triggerbot]
+enabled            = false
+trigger_key        = "mouse4"
+min_confidence     = 0.65
+crosshair_radius   = 8.0
+min_frames         = 3
+delay_ms           = 30
+burst_ms           = 80
+cooldown_ms        = 120
+visibility_check   = true
+min_pixel_variance = 15.0
+sample_size        = 5
+
+[debug]
+show_fps        = false
+show_detections = false
+verbose         = false
+
+[info]
+discord_rpc = true

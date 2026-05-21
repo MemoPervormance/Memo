@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAX-AI Control Panel</title>
+<style>
+  :root {
+    --bg: #0d0d0d; --bg2: #161616; --bg3: #1e1e1e;
+    --accent: #00e5ff; --accent2: #7c4dff;
+    --text: #e0e0e0; --text2: #9e9e9e; --text3: #616161;
+    --green: #00e676; --red: #ff1744; --orange: #ff9100;
+    --border: #2a2a2a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 13px; height: 100vh; display: flex; flex-direction: column;
+  }
+  /* Header */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+  }
+  header .logo { font-size: 18px; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+  header .status-bar { display: flex; gap: 16px; font-size: 12px; }
+  .badge { padding: 2px 8px; border-radius: 3px; font-weight: 600; font-size: 11px; }
+  .badge.green  { background: #00e67622; color: var(--green); border: 1px solid var(--green); }
+  .badge.red    { background: #ff174422; color: var(--red);   border: 1px solid var(--red);   }
+  .badge.orange { background: #ff910022; color: var(--orange);border: 1px solid var(--orange); }
+  .badge.blue   { background: #00e5ff22; color: var(--accent);border: 1px solid var(--accent); }
+
+  /* Layout */
+  .main { display: flex; flex: 1; overflow: hidden; }
+  nav {
+    width: 140px; flex-shrink: 0; background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 8px 0; display: flex; flex-direction: column; gap: 2px;
+  }
+  nav button {
+    background: none; border: none; color: var(--text2);
+    text-align: left; padding: 8px 16px; cursor: pointer;
+    font-size: 12px; border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  nav button:hover { background: var(--bg3); color: var(--text); }
+  nav button.active { color: var(--accent); border-left-color: var(--accent); background: var(--bg3); }
+
+  /* Content pane */
+  .content { flex: 1; overflow-y: auto; padding: 16px; }
+  .tab { display: none; }
+  .tab.active { display: block; }
+
+  /* Cards */
+  .card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 14px; margin-bottom: 12px;
+  }
+  .card h3 { font-size: 12px; color: var(--text2); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 12px; border-bottom: 1px solid var(--border);
+    padding-bottom: 6px; }
+
+  /* Form controls */
+  .field { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .field label { width: 160px; color: var(--text2); font-size: 12px; flex-shrink: 0; }
+  .field input[type=number], .field input[type=text] {
+    width: 100px; background: var(--bg3); border: 1px solid var(--border);
+    color: var(--text); padding: 4px 8px; border-radius: 4px; font-size: 12px;
+  }
+  .field input[type=number]:focus, .field input[type=text]:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .field input[type=range] { width: 120px; accent-color: var(--accent); }
+  .field span.val { width: 50px; color: var(--accent); font-size: 12px; }
+  .field input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
+
+  /* Buttons */
+  .btn {
+    padding: 7px 18px; border-radius: 4px; border: none;
+    font-size: 12px; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn.primary   { background: var(--accent);  color: #000; }
+  .btn.danger    { background: var(--red);     color: #fff; }
+  .btn.secondary { background: var(--bg3);     color: var(--text); border: 1px solid var(--border); }
+  .btn.success   { background: var(--green);   color: #000; }
+  .btn-row       { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* Status grid */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .stat-box { background: var(--bg3); border-radius: 5px; padding: 10px; border: 1px solid var(--border); }
+  .stat-box .label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+  .stat-box .value { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+
+  /* Error banner */
+  #error-banner {
+    display: none; background: #ff174422; border: 1px solid var(--red);
+    color: var(--red); padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;
+    font-size: 12px;
+  }
+  .section-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MAX-AI</div>
+  <div class="status-bar">
+    <span>FPS: <b id="h-fps">0</b></span>
+    <span>Targets: <b id="h-det">0</b></span>
+    <span id="h-provider" class="badge blue">CPU</span>
+    <span id="h-backend" class="badge orange">relative_mouse</span>
+    <span id="h-status" class="badge red">Idle</span>
+    <span id="h-tunnel" style="font-size:11px;color:var(--text3)"></span>
+  </div>
+</header>
+
+<div class="main">
+  <nav>
+    <button class="active" onclick="showTab('status')">Status</button>
+    <button onclick="showTab('capture')">Capture</button>
+    <button onclick="showTab('detection')">Detection</button>
+    <button onclick="showTab('assist')">Assist</button>
+    <button onclick="showTab('controller')">Mouse / Pad</button>
+    <button onclick="showTab('crosshair')">Crosshair</button>
+    <button onclick="showTab('trigger')">Trigger</button>
+    <button onclick="showTab('debug')">Debug</button>
+    <button onclick="showTab('info')">Info</button>
+  </nav>
+
+  <div class="content">
+    <div id="error-banner"></div>
+
+    <!-- STATUS TAB -->
+    <div id="tab-status" class="tab active">
+      <div class="section-title">System Status</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="label">FPS</div><div class="value" id="s-fps">0</div></div>
+        <div class="stat-box"><div class="label">Targets</div><div class="value" id="s-det">0</div></div>
+        <div class="stat-box"><div class="label">Loop</div><div class="value" id="s-run">—</div></div>
+        <div class="stat-box"><div class="label">Assist</div><div class="value" id="s-aim">—</div></div>
+        <div class="stat-box"><div class="label">Provider</div><div class="value" id="s-prov" style="font-size:13px">—</div></div>
+        <div class="stat-box"><div class="label">Backend</div><div class="value" id="s-back" style="font-size:13px">—</div></div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Loop Control</h3>
+        <div class="btn-row">
+          <button class="btn primary"   onclick="apiPost('/x/r')">▶ Start</button>
+          <button class="btn secondary" onclick="apiPost('/x/p')">⏹ Stop</button>
+          <button class="btn secondary" onclick="apiPost('/x/t')">⇄ Toggle Assist</button>
+          <button class="btn secondary" onclick="apiPost('/x/v')">💾 Save Config</button>
+          <button class="btn danger"    onclick="apiPost('/x/k')">✕ Kill</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Model</h3>
+        <div class="field">
+          <label>Model File</label>
+          <span id="s-model" style="color:var(--text2);font-size:12px">—</span>
+          <span id="s-model-found" class="badge red" style="margin-left:8px">not found</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPTURE TAB -->
+    <div id="tab-capture" class="tab">
+      <div class="section-title">Capture</div>
+      <div class="card">
+        <h3>Screen Capture</h3>
+        <div class="field"><label>Monitor Index</label>
+          <input type="number" id="c-monitor" min="0" max="8" value="0">
+        </div>
+        <div class="field"><label>Capture Size (px)</label>
+          <input type="number" id="c-capture_size" min="160" max="1280" step="32" value="320">
+        </div>
+        <div class="field"><label>FPS Limit (0=off)</label>
+          <input type="number" id="c-fps_limit" min="0" max="240" value="0">
+        </div>
+        <div class="field"><label>Steady FPS</label>
+          <input type="number" id="c-steady_fps" min="1" max="240" value="100">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('capture')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETECTION TAB -->
+    <div id="tab-detection" class="tab">
+      <div class="section-title">Detection Engine</div>
+      <div class="card">
+        <h3>ONNX / YOLO</h3>
+        <div class="field"><label>Model Path</label>
+          <input type="text" id="d-model_path" style="width:220px" value="model.onnx">
+        </div>
+        <div class="field"><label>Confidence Threshold</label>
+          <input type="range" id="d-confidence_threshold" min="0.1" max="1" step="0.01" value="0.5"
+            oninput="document.getElementById('d-ct-v').textContent=this.value">
+          <span class="val" id="d-ct-v">0.50</span>
+        </div>
+        <div class="field"><label>NMS Threshold</label>
+          <input type="range" id="d-nms_threshold" min="0.1" max="1" step="0.01" value="0.45"
+            oninput="document.getElementById('d-nms-v').textContent=this.value">
+          <span class="val" id="d-nms-v">0.45</span>
+        </div>
+        <div class="field"><label>Max Detections</label>
+          <input type="number" id="d-max_detections" min="1" max="100" value="10">
+        </div>
+        <div class="field"><label>Use CUDA</label>
+          <input type="checkbox" id="d-use_cuda" checked>
+        </div>
+        <div class="field"><label>Use TensorRT</label>
+          <input type="checkbox" id="d-use_tensorrt">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('detection')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASSIST TAB -->
+    <div id="tab-assist" class="tab">
+      <div class="section-title">Assist / Align</div>
+      <div class="card">
+        <h3>Basic</h3>
+        <div class="field"><label>Enabled</label>
+          <input type="checkbox" id="a-enabled" checked>
+        </div>
+        <div class="field"><label>Assist Key</label>
+          <input type="text" id="a-aim_key" value="mouse5" style="width:80px">
+        </div>
+        <div class="field"><label>Toggle Key</label>
+          <input type="text" id="a-toggle_key" value="f6" style="width:80px">
+        </div>
+        <div class="field"><label>Exit Key</label>
+          <input type="text" id="a-exit_key" value="f12" style="width:80px">
+        </div>
+        <div class="field"><label>FOV Radius (px)</label>
+          <input type="number" id="a-fov_radius" min="10" max="2000" value="200">
+        </div>
+        <div class="field"><label>Smoothness</label>
+          <input type="range" id="a-aim_smoothness" min="1" max="20" step="0.5" value="1"
+            oninput="document.getElementById('a-sm-v').textContent=this.value">
+          <span class="val" id="a-sm-v">1</span>
+        </div>
+        <div class="field"><label>Head From Top</label>
+          <input type="range" id="a-head_from_top" min="0" max="1" step="0.01" value="0.10"
+            oninput="document.getElementById('a-hft-v').textContent=this.value">
+          <span class="val" id="a-hft-v">0.10</span>
+        </div>
+        <div class="field"><label>Snap Zone (px)</label>
+          <input type="number" id="a-snap_zone_px" min="0" max="200" value="22">
+        </div>
+      </div>
+      <div class="card">
+        <h3>Prediction</h3>
+        <div class="field"><label>Enabled</label>
+          <input type="checkbox" id="ap-enabled" checked>
+        </div>
+        <div class="field"><label>Lead Factor</label>
+          <input type="number" id="ap-lead_factor" min="0" max="500" value="80">
+        </div>
+        <div class="field"><label>Min Speed</label>
+          <input type="number" id="ap-min_speed" min="0" max="500" value="30">
+        </div>
+        <div class="field"><label>Max Offset (px)</label>
+          <input type="number" id="ap-max_offset" min="0" max="200" value="25">
+        </div>
+        <div class="field"><label>Lead Max Jump</label>
+          <input type="number" id="ap-lead_max_jump" min="0" max="1000" value="120">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="saveAssist()">Apply</button>
+      </div>
+    </div>
+
+    <!-- CONTROLLER TAB -->
+    <div id="tab-controller" class="tab">
+      <div class="section-title">Mouse / Gamepad Settings</div>
+      <div class="card">
+        <h3>Sensitivity &amp; Response</h3>
+        <div class="field"><label>Sensitivity (stick)</label>
+          <input type="range" id="ctrl-stick_sensitivity" min="0.1" max="3" step="0.05" value="0.75"
+            oninput="document.getElementById('ctrl-ss-v').textContent=this.value">
+          <span class="val" id="ctrl-ss-v">0.75</span>
+        </div>
+        <div class="field"><label>Deadzone (px)</label>
+          <input type="number" id="ctrl-stick_deadzone_px" min="0" max="50" value="1">
+        </div>
+        <div class="field"><label>Smoothing</label>
+          <input type="range" id="ctrl-stick_smoothing" min="0" max="1" step="0.01" value="0.35"
+            oninput="document.getElementById('ctrl-smo-v').textContent=this.value">
+          <span class="val" id="ctrl-smo-v">0.35</span>
+        </div>
+        <div class="field"><label>Acceleration</label>
+          <input type="range" id="ctrl-stick_acceleration" min="0.5" max="5" step="0.1" value="1.4"
+            oninput="document.getElementById('ctrl-acc-v').textContent=this.value">
+          <span class="val" id="ctrl-acc-v">1.4</span>
+        </div>
+        <div class="field"><label>Invert Y</label>
+          <input type="checkbox" id="ctrl-stick_y_invert" checked>
+        </div>
+        <div class="field"><label>Invert X</label>
+          <input type="checkbox" id="ctrl-stick_x_invert">
+        </div>
+        <div class="field"><label>Min Magnitude</label>
+          <input type="number" id="ctrl-rs_min_magnitude" min="0" max="1" step="0.01" value="0.16">
+        </div>
+        <div class="field"><label>ADS while Tracking</label>
+          <input type="checkbox" id="ctrl-lt_while_aim">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('controller')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CROSSHAIR TAB -->
+    <div id="tab-crosshair" class="tab">
+      <div class="section-title">Crosshair Offset &amp; Parallax</div>
+      <div class="card">
+        <div class="field"><label>Offset X (px)</label>
+          <input type="number" id="ch-offset_x" min="-500" max="500" value="0">
+        </div>
+        <div class="field"><label>Offset Y (px)</label>
+          <input type="number" id="ch-offset_y" min="-500" max="500" value="0">
+        </div>
+        <div class="field"><label>Parallax X</label>
+          <input type="range" id="ch-parallax_x" min="-1" max="1" step="0.01" value="0"
+            oninput="document.getElementById('ch-px-v').textContent=this.value">
+          <span class="val" id="ch-px-v">0</span>
+        </div>
+        <div class="field"><label>Parallax Y</label>
+          <input type="range" id="ch-parallax_y" min="-1" max="1" step="0.01" value="0"
+            oninput="document.getElementById('ch-py-v').textContent=this.value">
+          <span class="val" id="ch-py-v">0</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('crosshair')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRIGGER TAB -->
+    <div id="tab-trigger" class="tab">
+      <div class="section-title">Auto-Fire Module</div>
+      <div class="card">
+        <div class="field"><label>Enabled</label>
+          <input type="checkbox" id="tr-enabled">
+        </div>
+        <div class="field"><label>Trigger Key</label>
+          <input type="text" id="tr-trigger_key" value="mouse4" style="width:80px">
+        </div>
+        <div class="field"><label>Min Confidence</label>
+          <input type="range" id="tr-min_confidence" min="0.1" max="1" step="0.01" value="0.65"
+            oninput="document.getElementById('tr-mc-v').textContent=this.value">
+          <span class="val" id="tr-mc-v">0.65</span>
+        </div>
+        <div class="field"><label>Crosshair Radius (px)</label>
+          <input type="number" id="tr-crosshair_radius" min="1" max="100" value="8">
+        </div>
+        <div class="field"><label>Confirm Frames</label>
+          <input type="number" id="tr-min_frames" min="1" max="30" value="3">
+        </div>
+        <div class="field"><label>Delay (ms)</label>
+          <input type="number" id="tr-delay_ms" min="0" max="500" value="30">
+        </div>
+        <div class="field"><label>Burst (ms)</label>
+          <input type="number" id="tr-burst_ms" min="10" max="500" value="80">
+        </div>
+        <div class="field"><label>Cooldown (ms)</label>
+          <input type="number" id="tr-cooldown_ms" min="10" max="2000" value="120">
+        </div>
+        <div class="field"><label>Visibility Check</label>
+          <input type="checkbox" id="tr-visibility_check" checked>
+        </div>
+        <div class="field"><label>Min Pixel Variance</label>
+          <input type="number" id="tr-min_pixel_variance" min="0" max="500" value="15">
+        </div>
+        <div class="field"><label>Sample Size (px)</label>
+          <input type="number" id="tr-sample_size" min="1" max="50" value="5">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('triggerbot')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEBUG TAB -->
+    <div id="tab-debug" class="tab">
+      <div class="section-title">Debug</div>
+      <div class="card">
+        <div class="field"><label>Show FPS</label>
+          <input type="checkbox" id="dbg-show_fps">
+        </div>
+        <div class="field"><label>Show Detections</label>
+          <input type="checkbox" id="dbg-show_detections">
+        </div>
+        <div class="field"><label>Verbose Logging</label>
+          <input type="checkbox" id="dbg-verbose">
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('debug')">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO TAB -->
+    <div id="tab-info" class="tab">
+      <div class="section-title">Info &amp; Integration</div>
+      <div class="card">
+        <h3>Discord Rich Presence</h3>
+        <div class="field"><label>Enable Discord RPC</label>
+          <input type="checkbox" id="inf-discord_rpc" checked>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="saveSection('info')">Apply</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Cloudflare Tunnel</h3>
+        <div class="field">
+          <label>Remote URL</label>
+          <span id="info-tunnel" style="color:var(--text2);font-size:12px">—</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>About MAX-AI</h3>
+        <p style="color:var(--text2);font-size:12px;line-height:1.7">
+          MAX-AI — Target Tracker &amp; Crosshair Aligner<br>
+          For use in isolated CTF / security lab environments only.<br>
+          Input Backend: <span id="info-backend" style="color:var(--accent)">—</span>
+        </p>
+      </div>
+    </div>
+
+  </div><!-- content -->
+</div><!-- main -->
+
+<script>
+let _cfg = {};
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function apiPost(url, body) {
+  return fetch(url, { method:'POST', headers:{'Content-Type':'application/json'},
+    body: body ? JSON.stringify(body) : undefined })
+    .then(r => r.json()).catch(console.error);
+}
+
+function updateStatus(s) {
+  document.getElementById('h-fps').textContent   = s.fps ?? 0;
+  document.getElementById('h-det').textContent   = s.detection_count ?? 0;
+  document.getElementById('h-provider').textContent = s.provider ?? '—';
+  document.getElementById('h-backend').textContent  = s.input_backend ?? '—';
+
+  const sb = document.getElementById('h-status');
+  const stxt = s.running ? (s.aim_active ? 'Active' : 'Running') : 'Idle';
+  sb.textContent = stxt;
+  sb.className = 'badge ' + (s.aim_active ? 'green' : s.running ? 'orange' : 'red');
+
+  document.getElementById('s-fps').textContent   = s.fps ?? 0;
+  document.getElementById('s-det').textContent   = s.detection_count ?? 0;
+  document.getElementById('s-run').textContent   = s.running ? '✓ ON' : '✗ OFF';
+  document.getElementById('s-aim').textContent   = s.aim_active ? '✓ ON' : '—';
+  document.getElementById('s-prov').textContent  = s.provider ?? '—';
+  document.getElementById('s-back').textContent  = s.input_backend ?? '—';
+
+  document.getElementById('s-model').textContent = s.model_path ?? '—';
+  const mf = document.getElementById('s-model-found');
+  mf.textContent = s.model_found ? 'found' : 'not found';
+  mf.className = 'badge ' + (s.model_found ? 'green' : 'red');
+
+  const turl = s.tunnel_url || '—';
+  document.getElementById('h-tunnel').textContent  = turl !== '—' ? turl : '';
+  document.getElementById('info-tunnel').textContent = turl;
+  document.getElementById('info-backend').textContent = s.input_backend ?? '—';
+
+  if (s.error) {
+    const eb = document.getElementById('error-banner');
+    eb.textContent = '⚠ ' + s.error;
+    eb.style.display = 'block';
+  }
+}
+
+function populateForm(cfg) {
+  _cfg = cfg;
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!val;
+    else el.value = val ?? '';
+  };
+
+  if (cfg.capture) {
+    set('c-monitor',      cfg.capture.monitor);
+    set('c-capture_size', cfg.capture.capture_size);
+    set('c-fps_limit',    cfg.capture.fps_limit);
+    set('c-steady_fps',   cfg.capture.steady_fps);
+  }
+  if (cfg.detection) {
+    set('d-model_path',           cfg.detection.model_path);
+    set('d-confidence_threshold', cfg.detection.confidence_threshold);
+    set('d-nms_threshold',        cfg.detection.nms_threshold);
+    set('d-max_detections',       cfg.detection.max_detections);
+    set('d-use_cuda',             cfg.detection.use_cuda);
+    set('d-use_tensorrt',         cfg.detection.use_tensorrt);
+    document.getElementById('d-ct-v').textContent  = cfg.detection.confidence_threshold;
+    document.getElementById('d-nms-v').textContent = cfg.detection.nms_threshold;
+  }
+  if (cfg.aim) {
+    set('a-enabled',       cfg.aim.enabled);
+    set('a-aim_key',       cfg.aim.aim_key);
+    set('a-toggle_key',    cfg.aim.toggle_key);
+    set('a-exit_key',      cfg.aim.exit_key);
+    set('a-fov_radius',    cfg.aim.fov_radius);
+    set('a-aim_smoothness',cfg.aim.aim_smoothness);
+    set('a-head_from_top', cfg.aim.head_from_top);
+    set('a-snap_zone_px',  cfg.aim.snap_zone_px);
+    document.getElementById('a-sm-v').textContent  = cfg.aim.aim_smoothness;
+    document.getElementById('a-hft-v').textContent = cfg.aim.head_from_top;
+    if (cfg.aim.prediction) {
+      set('ap-enabled',       cfg.aim.prediction.enabled);
+      set('ap-lead_factor',   cfg.aim.prediction.lead_factor);
+      set('ap-min_speed',     cfg.aim.prediction.min_speed);
+      set('ap-max_offset',    cfg.aim.prediction.max_offset);
+      set('ap-lead_max_jump', cfg.aim.prediction.lead_max_jump);
+    }
+  }
+  if (cfg.controller) {
+    set('ctrl-stick_sensitivity', cfg.controller.stick_sensitivity);
+    set('ctrl-stick_deadzone_px', cfg.controller.stick_deadzone_px);
+    set('ctrl-stick_smoothing',   cfg.controller.stick_smoothing);
+    set('ctrl-stick_acceleration',cfg.controller.stick_acceleration);
+    set('ctrl-stick_y_invert',    cfg.controller.stick_y_invert);
+    set('ctrl-stick_x_invert',    cfg.controller.stick_x_invert);
+    set('ctrl-rs_min_magnitude',  cfg.controller.rs_min_magnitude);
+    set('ctrl-lt_while_aim',      cfg.controller.lt_while_aim);
+    document.getElementById('ctrl-ss-v').textContent  = cfg.controller.stick_sensitivity;
+    document.getElementById('ctrl-smo-v').textContent = cfg.controller.stick_smoothing;
+    document.getElementById('ctrl-acc-v').textContent = cfg.controller.stick_acceleration;
+  }
+  if (cfg.crosshair) {
+    set('ch-offset_x',   cfg.crosshair.offset_x);
+    set('ch-offset_y',   cfg.crosshair.offset_y);
+    set('ch-parallax_x', cfg.crosshair.parallax_x);
+    set('ch-parallax_y', cfg.crosshair.parallax_y);
+    document.getElementById('ch-px-v').textContent = cfg.crosshair.parallax_x;
+    document.getElementById('ch-py-v').textContent = cfg.crosshair.parallax_y;
+  }
+  if (cfg.triggerbot) {
+    set('tr-enabled',           cfg.triggerbot.enabled);
+    set('tr-trigger_key',       cfg.triggerbot.trigger_key);
+    set('tr-min_confidence',    cfg.triggerbot.min_confidence);
+    set('tr-crosshair_radius',  cfg.triggerbot.crosshair_radius);
+    set('tr-min_frames',        cfg.triggerbot.min_frames);
+    set('tr-delay_ms',          cfg.triggerbot.delay_ms);
+    set('tr-burst_ms',          cfg.triggerbot.burst_ms);
+    set('tr-cooldown_ms',       cfg.triggerbot.cooldown_ms);
+    set('tr-visibility_check',  cfg.triggerbot.visibility_check);
+    set('tr-min_pixel_variance',cfg.triggerbot.min_pixel_variance);
+    set('tr-sample_size',       cfg.triggerbot.sample_size);
+    document.getElementById('tr-mc-v').textContent = cfg.triggerbot.min_confidence;
+  }
+  if (cfg.debug) {
+    set('dbg-show_fps',       cfg.debug.show_fps);
+    set('dbg-show_detections',cfg.debug.show_detections);
+    set('dbg-verbose',        cfg.debug.verbose);
+  }
+  if (cfg.info) {
+    set('inf-discord_rpc', cfg.info.discord_rpc);
+  }
+}
+
+function readSection(section) {
+  const get = id => {
+    const el = document.getElementById(id);
+    if (!el) return undefined;
+    if (el.type === 'checkbox') return el.checked;
+    if (el.type === 'number' || el.type === 'range') return parseFloat(el.value);
+    return el.value;
+  };
+  switch(section) {
+    case 'capture': return { capture: {
+      monitor:      get('c-monitor'),
+      capture_size: get('c-capture_size'),
+      fps_limit:    get('c-fps_limit'),
+      steady_fps:   get('c-steady_fps'),
+    }};
+    case 'detection': return { detection: {
+      model_path:            get('d-model_path'),
+      confidence_threshold:  get('d-confidence_threshold'),
+      nms_threshold:         get('d-nms_threshold'),
+      max_detections:        get('d-max_detections'),
+      use_cuda:              get('d-use_cuda'),
+      use_tensorrt:          get('d-use_tensorrt'),
+    }};
+    case 'controller': return { controller: {
+      stick_sensitivity:  get('ctrl-stick_sensitivity'),
+      stick_deadzone_px:  get('ctrl-stick_deadzone_px'),
+      stick_smoothing:    get('ctrl-stick_smoothing'),
+      stick_acceleration: get('ctrl-stick_acceleration'),
+      stick_y_invert:     get('ctrl-stick_y_invert'),
+      stick_x_invert:     get('ctrl-stick_x_invert'),
+      rs_min_magnitude:   get('ctrl-rs_min_magnitude'),
+      lt_while_aim:       get('ctrl-lt_while_aim'),
+    }};
+    case 'crosshair': return { crosshair: {
+      offset_x:   get('ch-offset_x'),
+      offset_y:   get('ch-offset_y'),
+      parallax_x: get('ch-parallax_x'),
+      parallax_y: get('ch-parallax_y'),
+    }};
+    case 'triggerbot': return { triggerbot: {
+      enabled:            get('tr-enabled'),
+      trigger_key:        get('tr-trigger_key'),
+      min_confidence:     get('tr-min_confidence'),
+      crosshair_radius:   get('tr-crosshair_radius'),
+      min_frames:         get('tr-min_frames'),
+      delay_ms:           get('tr-delay_ms'),
+      burst_ms:           get('tr-burst_ms'),
+      cooldown_ms:        get('tr-cooldown_ms'),
+      visibility_check:   get('tr-visibility_check'),
+      min_pixel_variance: get('tr-min_pixel_variance'),
+      sample_size:        get('tr-sample_size'),
+    }};
+    case 'debug': return { debug: {
+      show_fps:        get('dbg-show_fps'),
+      show_detections: get('dbg-show_detections'),
+      verbose:         get('dbg-verbose'),
+    }};
+    case 'info': return { info: {
+      discord_rpc: get('inf-discord_rpc'),
+    }};
+    default: return {};
+  }
+}
+
+function saveSection(section) {
+  const data = readSection(section);
+  fetch('/x/c', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data) })
+    .then(r => r.json())
+    .then(cfg => populateForm(cfg))
+    .catch(console.error);
+}
+
+function saveAssist() {
+  const get = id => {
+    const el = document.getElementById(id);
+    if (!el) return undefined;
+    if (el.type === 'checkbox') return el.checked;
+    if (el.type === 'number' || el.type === 'range') return parseFloat(el.value);
+    return el.value;
+  };
+  const data = { aim: {
+    enabled:       get('a-enabled'),
+    aim_key:       get('a-aim_key'),
+    toggle_key:    get('a-toggle_key'),
+    exit_key:      get('a-exit_key'),
+    fov_radius:    get('a-fov_radius'),
+    aim_smoothness:get('a-aim_smoothness'),
+    head_from_top: get('a-head_from_top'),
+    snap_zone_px:  get('a-snap_zone_px'),
+    prediction: {
+      enabled:       get('ap-enabled'),
+      lead_factor:   get('ap-lead_factor'),
+      min_speed:     get('ap-min_speed'),
+      max_offset:    get('ap-max_offset'),
+      lead_max_jump: get('ap-lead_max_jump'),
+    }
+  }};
+  fetch('/x/c', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(data) })
+    .then(r => r.json())
+    .then(cfg => populateForm(cfg))
+    .catch(console.error);
+}
+
+// Poll status + load config on start
+async function init() {
+  const cfg = await fetch('/x/c').then(r => r.json()).catch(() => ({}));
+  populateForm(cfg);
+  setInterval(async () => {
+    const s = await fetch('/x/s').then(r => r.json()).catch(() => ({}));
+    updateStatus(s);
+  }, 500);
+}
+init();
+</script>
+</body>
+</html>
