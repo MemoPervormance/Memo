@@ -1,46 +1,41 @@
 # CroixAI — Python dependencies
-# Install: pip install -r requirements.txt
+# Run INSTALL.bat (or: pip install -r requirements.txt)
 
 # Web server
 fastapi>=0.110
 uvicorn[standard]>=0.27
 
-# ONNX inference
-onnxruntime-gpu>=1.17       # CUDA/TRT — swap for onnxruntime-directml if no CUDA
+# ONNX Runtime — DirectML works on ALL Windows GPUs (AMD/Intel/NVIDIA), no CUDA needed
+onnxruntime-directml>=1.17
+# For NVIDIA CUDA: run INSTALL_CUDA.bat instead
 
-# Numerics / image
+# Numerics / Image
 numpy>=1.26
 Pillow>=10.0
+opencv-python>=4.9
 
 # Config
 toml>=0.10
 pydantic>=2.0
 
 # Screen capture
-dxcam>=0.0.5                # primary DXGI capture
+dxcam>=0.0.5
 
-# Serial backends (Arduino, MAKCU, RP2040, Titan Two)
+# Input / Serial backends
 pyserial>=3.5
 
-# Virtual gamepad (optional)
-pyvigem>=0.0.6
-
-# Capture card backend (optional)
-opencv-python>=4.9
-
-# Win32 overlay + hotkeys
+# Windows APIs (overlay + hotkeys + GDI)
 pywin32>=306
 
-# Discord RPC (optional)
+# Discord Rich Presence (optional)
 pypresence>=4.3
 
-# WinRT capture (optional)
-# windows-capture>=1.2       # uncomment if using WinRT backend
+# Optional backends (uncomment to enable):
+# windows-capture>=1.2   # WinRT capture (HDR / exclusive fullscreen)
+# ndi-python>=0.1        # NDI 2-PC network capture
+# pyvigem>=0.0.6         # Virtual Xbox controller
 
-# NDI capture (optional)
-# ndi-python>=0.1            # uncomment + install NDI SDK runtime
-
-# ── AI Model Training (only needed to train new models) ──────────────
-# ultralytics>=8.2           # YOLOv8 training: pip install ultralytics
-# torch>=2.2                 # PyTorch GPU: follow pytorch.org install instructions
+# AI Model Training (only if training your own models):
+# ultralytics>=8.2
+# torch>=2.2
 # torchvision>=0.17

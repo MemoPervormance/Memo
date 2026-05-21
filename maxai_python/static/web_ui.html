@@ -357,17 +357,30 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
 <!-- ══ MODELS ══ -->
 <div id="tab-models" class="tab">
   <h2>🤖 AI Models</h2>
+
+  <!-- Scanned files in models/ folder -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title" style="justify-content:space-between">
+      <span>📁 Gefundene Models in models\</span>
+      <button class="btn btn-out btn-sm" onclick="scanModels()">🔄 Scannen</button>
+    </div>
+    <div id="scan-list"><div style="color:var(--tx3);font-size:13px">Klicke Scannen…</div></div>
+    <div style="font-size:11px;color:var(--tx3);margin-top:8px">
+      Lege .onnx oder .engine Dateien in den <code style="color:var(--acc2)">models\</code> Ordner → Scannen → Laden
+    </div>
+  </div>
+
+  <!-- Manual path -->
   <div class="card" style="margin-bottom:20px">
-    <div class="card-title">📂 Model laden</div>
+    <div class="card-title">✏️ Pfad manuell eingeben</div>
     <div class="path-row">
-      <input type="text" class="path-inp" id="m-path" placeholder="models/model.onnx">
-      <button class="btn btn-out btn-sm" onclick="document.getElementById('m-fi').click()">📂 Browse</button>
-      <input type="file" id="m-fi" accept=".onnx,.engine" style="display:none" onchange="pickModel(this,'m-path')">
+      <input type="text" class="path-inp" id="m-path" placeholder="models\model.onnx">
       <button class="btn btn-acc btn-sm" onclick="applyModelPath()">✓ Setzen</button>
     </div>
     <div id="m-status" style="font-size:12px;color:var(--tx3);margin-top:2px"></div>
   </div>
-  <h3>Trainierte Models (in models/ ablegen)</h3>
+
+  <h3>Model-Konfigurationen (Referenz)</h3>
   <div class="model-grid" id="model-grid"><div style="color:var(--tx3)">Lädt…</div></div>
 </div>
 
@@ -625,9 +638,39 @@ async function applyModelPath(){
   const path=(document.getElementById('m-path')||{}).value||'';
   if(!path){toast('Kein Pfad angegeben','err');return;}
   await sc('detection.model_path',path);
-  document.getElementById('m-status').textContent='✓ Pfad gesetzt — Loop neu starten zum Laden';
-  document.getElementById('m-status').style.color='var(--gr)';
+  const st=document.getElementById('m-status');
+  if(st){st.textContent='✓ Gesetzt — Loop neu starten zum Laden';st.style.color='var(--gr)';}
   toast('Model Pfad gesetzt ✓','ok');
+}
+async function scanModels(){
+  const sl=document.getElementById('scan-list');
+  sl.innerHTML='<div style="color:var(--tx3)">Scanne…</div>';
+  try{
+    const data=await fetch('/x/models/scan').then(r=>r.json());
+    if(!data.files?.length){
+      sl.innerHTML='<div style="color:var(--tx3);font-size:13px">Keine .onnx/.engine Dateien in models\\ gefunden.</div>';
+      return;
+    }
+    sl.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">'+
+      data.files.map(f=>`
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:7px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--tx)">${f.filename}</div>
+            <div style="font-size:11px;color:var(--tx3)">${f.size_mb} MB · ${f.type.toUpperCase()}</div>
+          </div>
+          <button class="btn btn-gr btn-sm" onclick="loadScannedModel('${f.filename}')">✓ Laden</button>
+        </div>`).join('')+
+      '</div>';
+  }catch(e){sl.innerHTML=`<div style="color:var(--rd)">Fehler: ${e.message}</div>`;}
+}
+async function loadScannedModel(filename){
+  try{
+    await api('POST','/x/models/load-file',{filename});
+    toast(`${filename} geladen ✓`,'ok');
+    loadConfig();
+    // Also update path input
+    const el=document.getElementById('m-path');if(el)el.value='models\\'+filename;
+  }catch{}
 }
 async function loadModels(){
   try{
@@ -788,7 +831,7 @@ function show(tab){
   const i=_tabs.indexOf(tab);
   if(i>=0)document.querySelectorAll('nav button')[i]?.classList.add('active');
   if(tab==='presets')loadPresets();
-  if(tab==='models')loadModels();
+  if(tab==='models'){loadModels();scanModels();}
   if(tab==='setup')loadSetup();
   if(tab==='profiles')loadProfiles();
 }

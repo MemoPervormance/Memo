@@ -262,4 +262,37 @@ def create_app(
         })
         return JSONResponse({"ok": True, "model": model_name, "path": str(model_path)})
 
+    # ------------------------------------------------------------------
+    # Model file scanner — lists all .onnx/.engine in models/ folder
+    # ------------------------------------------------------------------
+    @app.get("/x/models/scan")
+    async def scan_model_files():
+        models_dir = Path(__file__).parent / "models"
+        models_dir.mkdir(exist_ok=True)
+        files = []
+        for f in sorted(models_dir.iterdir()):
+            if f.suffix in (".onnx", ".engine"):
+                files.append({
+                    "filename": f.name,
+                    "path":     str(f),
+                    "size_mb":  round(f.stat().st_size / 1_048_576, 1),
+                    "type":     "tensorrt" if f.suffix == ".engine" else "onnx",
+                })
+        return JSONResponse({"files": files, "folder": str(models_dir)})
+
+    @app.post("/x/models/load-file")
+    async def load_model_file(body: dict):
+        filename = body.get("filename", "")
+        models_dir = Path(__file__).parent / "models"
+        path = models_dir / filename
+        if not path.exists():
+            raise HTTPException(404, f"Datei nicht gefunden: {filename}")
+        config_mgr.update({
+            "detection": {
+                "model_path":   str(path),
+                "use_tensorrt": path.suffix == ".engine",
+            }
+        })
+        return JSONResponse({"ok": True, "path": str(path)})
+
     return app
