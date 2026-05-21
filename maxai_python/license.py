@@ -130,7 +130,15 @@ def _clear_cache() -> None:
 def _validate_online(key: str, hwid: str) -> dict:
     """
     POST to auth server.
-    Expected response: {"valid": bool, "hwid_ok": bool, "expires_at": str|null, "message": str}
+
+    Server logic (implement on your backend):
+      - If key not found         → {"valid": false, "message": "Ungültiger Key."}
+      - If key found, no HWID    → bind HWID to key, return {"valid": true, "hwid_ok": true}
+      - If key found, same HWID  → {"valid": true, "hwid_ok": true}
+      - If key found, other HWID → {"valid": true, "hwid_ok": false}
+      - If key expired           → {"valid": false, "message": "Key abgelaufen."}
+
+    Response schema: {"valid": bool, "hwid_ok": bool, "expires_at": str|null, "message": str}
     """
     import urllib.request
     import urllib.error

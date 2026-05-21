@@ -1,0 +1,53 @@
+╔══════════════════════════════════════════════════════════════╗
+║            CroixAI Key Server — Owner Guide                  ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  SETUP (einmalig):                                           ║
+║  1. Auf deinem VPS/Server installieren:                      ║
+║     pip install -r requirements.txt                          ║
+║                                                              ║
+║  2. Admin-Secret setzen (in Produktionsumgebung):            ║
+║     set CROIXAI_ADMIN_SECRET=dein-geheimes-passwort          ║
+║     (UNBEDINGT ändern! Standardwert ist unsicher)            ║
+║                                                              ║
+║  3. Auth-URL in license.py anpassen:                         ║
+║     AUTH_SERVER_URL = "http://DEINE-IP:8080/v1/validate"     ║
+║                                                              ║
+║  4. Server starten:                                          ║
+║     uvicorn server:app --host 0.0.0.0 --port 8080            ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  KEY ERSTELLEN (für jeden Kunden):                           ║
+║                                                              ║
+║  curl -X POST http://localhost:8080/admin/keys/generate \    ║
+║    -H "x-admin-secret: dein-passwort" \                     ║
+║    -H "Content-Type: application/json" \                     ║
+║    -d '{"note": "Kundenname", "expires_in_days": 365}'       ║
+║                                                              ║
+║  → Antwort: {"key": "CROIX-XXXX-XXXX-XXXX-XXXX", ...}       ║
+║  → Diesen Key an den Kunden schicken. FERTIG.                ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  WIE ES FÜR KUNDEN LÄUFT (automatisch, ohne HWID-Sharing):  ║
+║                                                              ║
+║  1. Kunde startet CroixAI.exe                                ║
+║  2. Gibt seinen Key ein                                      ║
+║  3. Server sieht: Key vorhanden, noch keine HWID             ║
+║     → HWID wird automatisch gebunden (erste Aktivierung)     ║
+║  4. Zweite Aktivierung auf anderem PC → DENIED               ║
+║     (außer du setzt HWID zurück via /admin/keys/{key}/reset) ║
+║                                                              ║
+╠══════════════════════════════════════════════════════════════╣
+║  ALLE KEYS ANZEIGEN:                                         ║
+║  curl http://localhost:8080/admin/keys \                     ║
+║    -H "x-admin-secret: dein-passwort"                        ║
+║                                                              ║
+║  KEY SPERREN:                                                ║
+║  curl -X POST http://localhost:8080/admin/keys/CROIX-.../revoke║
+║    -H "x-admin-secret: dein-passwort"                        ║
+║                                                              ║
+║  HWID ZURÜCKSETZEN (Kunde hat neuen PC):                     ║
+║  curl -X POST http://localhost:8080/admin/keys/CROIX-.../reset-hwid║
+║    -H "x-admin-secret: dein-passwort"                        ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
