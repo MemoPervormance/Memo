@@ -80,16 +80,13 @@ DRIVERS: Dict[str, Dict[str, Any]] = {
     "ch340": {
         "label":       "CH340 / CH341 Treiber (Arduino)",
         "description": "Pflicht für Arduino Leonardo / Pro Micro mit CH340-Chip (USB-Serial).",
-        "url":         "https://www.wch-ic.com/downloads/file/65.html",
-        "filename":    "CH340_Setup.exe",
-        "install_args": [],
         "registry_keys": [
             r"HKLM\SYSTEM\CurrentControlSet\Services\CH341SER",
             r"HKLM\SYSTEM\CurrentControlSet\Services\CH341",
         ],
-        "type":        "exe",
+        "type":        "manual",
         "category":    "input",
-        "manual_note": "Manueller Download: https://www.wch-ic.com/downloads/CH341SER_EXE.html",
+        "manual_note": "Download: https://www.wch-ic.com/downloads/CH341SER_EXE.html  →  CH341SER.EXE herunterladen und installieren.",
     },
 
     "cp2102": {

@@ -67,6 +67,36 @@ def _select_ort_runtime() -> str:
     return "default"
 
 
+def _validate_model_file(model_path: str) -> None:
+    """Raise a clear error if the file is not a valid ONNX/TRT model."""
+    p = Path(model_path)
+    if not p.exists():
+        raise FileNotFoundError(
+            f"Model-Datei nicht gefunden: {model_path}\n"
+            f"→ Lege eine echte .onnx Datei in den models\\ Ordner."
+        )
+    size = p.stat().st_size
+    if size < 1024:
+        raise ValueError(
+            f"Model-Datei zu klein ({size} Bytes): {p.name}\n"
+            f"→ Das ist kein echtes trainiertes Model. Lege eine gültige .onnx Datei ab.\n"
+            f"→ Placeholder-Dateien aus der ZIP funktionieren nicht — du brauchst ein trainiertes Model."
+        )
+    if p.suffix == ".onnx":
+        # ONNX files start with valid protobuf — first byte is 0x0A or 0x08 or similar field tags
+        with open(p, "rb") as f:
+            header = f.read(8)
+        # Check it's not HTML (placeholder or download error)
+        if header[:5] in (b"<!DOC", b"<html", b"<?xml", b"<HTML"):
+            raise ValueError(
+                f"Model-Datei ist HTML, kein ONNX: {p.name}\n"
+                f"→ Der Download hat eine Webseite statt das Model gespeichert.\n"
+                f"→ Lade das Model manuell herunter und lege es in models\\ ab."
+            )
+        if len(header) < 4:
+            raise ValueError(f"Model-Datei ist leer oder beschädigt: {p.name}")
+
+
 def _build_session(
     model_path: str,
     use_cuda: bool,
@@ -168,6 +198,7 @@ class YOLODetector:
         self._model_w     = blob_size
 
         _select_ort_runtime()
+        _validate_model_file(model_path)
         self._session, self._provider = _build_session(
             model_path, use_cuda, use_tensorrt, blob_size
         )
