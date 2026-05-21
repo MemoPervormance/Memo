@@ -1,0 +1,25 @@
+# CroixAI — PHANTOM-V / Valorant Dataset Config
+# Place your dataset at datasets/valorant/
+# Structure:
+#   datasets/valorant/images/train/  *.jpg / *.png
+#   datasets/valorant/images/val/    *.jpg / *.png
+#   datasets/valorant/labels/train/  *.txt  (YOLO format)
+#   datasets/valorant/labels/val/    *.txt
+
+path: datasets/valorant
+train: images/train
+val:   images/val
+
+# Classes
+nc: 2
+names:
+  0: head    # enemy head  → primary target (PHANTOM-V precision shots)
+  1: body    # enemy body  → secondary / fallback
+
+# Collection tips:
+#   - Capture at 1920x1080 (all Valorant maps: Ascent, Bind, Haven, Pearl, Lotus, Sunset, Abyss)
+#   - Enable enemy highlight outlines in Accessibility settings (yellow outline)
+#   - Include: walking, crouching, peeking, scoped, jumping, sprinting stances
+#   - Include: long range, medium range, close range
+#   - Minimum 3000 labeled images for good results; 8000+ for excellent
+#   - Use auto-labeler: python training/dataset_collector.py --game valorant --output datasets/valorant --mode auto

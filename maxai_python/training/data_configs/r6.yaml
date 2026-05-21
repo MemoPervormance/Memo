@@ -1,0 +1,18 @@
+# CroixAI — BREACH-R6 / Rainbow Six Siege Dataset Config
+path: datasets/r6
+train: images/train
+val:   images/val
+
+nc: 3
+names:
+  0: head    # head (top 20% of bounding box — priority target)
+  1: body    # torso
+  2: drone   # Twitch drone, Jackal footprint tracker, Pulse heartbeat
+
+# Collection tips:
+#   - All operators (attackers + defenders) across all seasons
+#   - Peek angles through windows, doors, barricades, hatches
+#   - Rappelling, lean-left, lean-right, crouch stances critical
+#   - All maps: Bank, Clubhouse, Villa, Chalet, Coastline, Kafe, Oregon
+#   - Drone footage angle (floor-level) separate from player POV
+#   - Min 5000 images

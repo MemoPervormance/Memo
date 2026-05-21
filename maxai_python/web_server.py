@@ -12,6 +12,7 @@ from assist_loop import AssistLoop, SharedState
 from config import ConfigManager, ProfileManager
 from setup_wizard import check_all, check_driver, install_driver, get_install_progress, SETUP_GUIDE
 from game_presets import GAME_PRESETS, get_preset, apply_preset
+from model_registry import list_models, get_model_info, get_models_for_game, get_download_status
 
 logger = logging.getLogger("croixai.web")
 _HTML_PATH = Path(__file__).parent / "static" / "web_ui.html"
@@ -207,5 +208,58 @@ def create_app(
         if not ok:
             raise HTTPException(404, f"Preset '{game_id}' not found")
         return JSONResponse({"ok": True, "applied": game_id})
+
+    # ------------------------------------------------------------------
+    # Model Registry
+    # ------------------------------------------------------------------
+    @app.get("/x/models")
+    async def list_model_registry():
+        models_dir = Path(__file__).parent / "models"
+        models_dir.mkdir(exist_ok=True)
+        download_status = get_download_status(models_dir)
+        models = []
+        for m in list_models():
+            entry = {k: v for k, v in m.items() if k != "recommended_for"}
+            entry["on_disk"] = download_status.get(m["name"], False)
+            models.append(entry)
+        return JSONResponse({"models": models})
+
+    @app.get("/x/models/{model_name}")
+    async def get_model_detail(model_name: str):
+        info = get_model_info(model_name)
+        if not info:
+            raise HTTPException(404, f"Model '{model_name}' not found")
+        models_dir = Path(__file__).parent / "models"
+        on_disk = (models_dir / info["filename"]).exists()
+        return JSONResponse({**info, "on_disk": on_disk})
+
+    @app.get("/x/models/for/{game_id}")
+    async def models_for_game(game_id: str):
+        models_dir = Path(__file__).parent / "models"
+        result = []
+        for m in get_models_for_game(game_id):
+            on_disk = (models_dir / m["filename"]).exists()
+            result.append({**m, "on_disk": on_disk})
+        return JSONResponse({"models": result, "game_id": game_id})
+
+    @app.post("/x/models/{model_name}/use")
+    async def use_model(model_name: str):
+        info = get_model_info(model_name)
+        if not info:
+            raise HTTPException(404, f"Model '{model_name}' not found")
+        models_dir = Path(__file__).parent / "models"
+        model_path = models_dir / info["filename"]
+        if not model_path.exists():
+            raise HTTPException(400, f"Model file not found: {info['filename']}. Train it first.")
+        updated = config_mgr.update({
+            "detection": {
+                "model_path":             str(model_path),
+                "confidence_threshold":   info["confidence"],
+                "nms_threshold":          info["nms"],
+                "blob_size":              info["blob_size"],
+                "use_tensorrt":           False,
+            }
+        })
+        return JSONResponse({"ok": True, "model": model_name, "path": str(model_path)})
 
     return app

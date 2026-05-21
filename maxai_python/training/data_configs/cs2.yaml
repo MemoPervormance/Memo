@@ -1,0 +1,17 @@
+# CroixAI — KRIEG-CS / CS2 Dataset Config
+path: datasets/cs2
+train: images/train
+val:   images/val
+
+nc: 3
+names:
+  0: head    # head (T-side or CT-side)
+  1: body    # torso + legs
+  2: limb    # arms when peeking from corner
+
+# Collection tips:
+#   - Capture all competitive maps (Dust2, Mirage, Inferno, Nuke, Vertigo, Ancient, Anubis)
+#   - Include smoke grenade situations (partial occlusion key for FaceIt)
+#   - Include crouching peeks, wide peeks, shoulder peeks
+#   - Both T-side (orange) and CT-side (blue) skins
+#   - Min 5000 images for FaceIt-level performance

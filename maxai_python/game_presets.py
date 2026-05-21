@@ -18,6 +18,8 @@ from typing import Any, Dict, List
 GAME_PRESETS: List[Dict[str, Any]] = [
     {
         "id":          "valorant",
+        "model":       "PHANTOM-V",
+        "model_file":  "phantom_v.onnx",
         "name":        "Valorant",
         "icon":        "🔺",
         "description": "Riot Vanguard kernel anti-cheat. Hardware input backend REQUIRED. "
@@ -52,6 +54,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "cs2_faceit",
+        "model":       "KRIEG-CS",
+        "model_file":  "krieg_cs.onnx",
         "name":        "CS2 / FaceIt",
         "icon":        "🔫",
         "description": "CS2 with FaceIt anti-cheat. Hardware input backend strongly recommended. "
@@ -87,6 +91,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "apex",
+        "model":       "HAVOC-AX",
+        "model_file":  "havoc_ax.onnx",
         "name":        "Apex Legends",
         "icon":        "🦅",
         "description": "EA Easy Anti-Cheat. Borderless-window + relative_mouse works. "
@@ -121,6 +127,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "fortnite",
+        "model":       "STORM-FN",
+        "model_file":  "storm_fn.onnx",
         "name":        "Fortnite",
         "icon":        "🏗",
         "description": "Easy Anti-Cheat. Borderless-window recommended. "
@@ -153,6 +161,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "cod_warzone",
+        "model":       "WARLOCK-WZ",
+        "model_file":  "warlock_wz.onnx",
         "name":        "COD: Warzone / MW",
         "icon":        "💀",
         "description": "RICOCHET anti-cheat. Borderless-window OK with relative_mouse. "
@@ -187,6 +197,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "r6_siege",
+        "model":       "BREACH-R6",
+        "model_file":  "breach_r6.onnx",
         "name":        "Rainbow Six Siege",
         "icon":        "🛡",
         "description": "BattlEye anti-cheat. Hardware input recommended for ranked. "
@@ -222,6 +234,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "rust",
+        "model":       "FURNACE-RS",
+        "model_file":  "furnace_rs.onnx",
         "name":        "Rust",
         "icon":        "⚙",
         "description": "EAC. Borderless-window + relative_mouse or hardware. "

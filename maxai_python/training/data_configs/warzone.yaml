@@ -1,0 +1,18 @@
+# CroixAI — WARLOCK-WZ / COD Warzone & MW Dataset Config
+path: datasets/warzone
+train: images/train
+val:   images/val
+
+nc: 3
+names:
+  0: head       # head
+  1: body       # torso + legs
+  2: vehicle    # vehicles (trucks, helicopters — for vehicular combat)
+
+# Collection tips:
+#   - Warzone: Al Mazrah, Urzikstan, Rebirth Island, Fortune's Keep
+#   - MW3: all multiplayer maps (small to large)
+#   - Include: ADS stance (shrunk model), prone, mounting
+#   - Night mode + dark indoor lighting critical
+#   - Long-range (640 blob size essential) — collect targets at 50-500m
+#   - Min 8000 images (medium model needs more data)

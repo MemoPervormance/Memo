@@ -1,0 +1,18 @@
+# CroixAI — FURNACE-RS / Rust Dataset Config
+path: datasets/rust
+train: images/train
+val:   images/val
+
+nc: 3
+names:
+  0: head    # head (helmet-visible or naked head)
+  1: body    # body (naked vs full gear vs hazmat very different)
+  2: horse   # horses (rideable — need separate class)
+
+# Collection tips:
+#   - Naked, light armour, heavy armour, hazmat variants all needed
+#   - Day and night lighting (Rust has full day/night cycle)
+#   - Long-range (>100m) especially important for rifle use
+#   - Stone/Sheet Metal/Armoured base backgrounds vary wildly
+#   - Include: swimming, running, crouching, building
+#   - Min 5000 images

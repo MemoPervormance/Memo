@@ -39,3 +39,8 @@ pypresence>=4.3
 
 # NDI capture (optional)
 # ndi-python>=0.1            # uncomment + install NDI SDK runtime
+
+# ── AI Model Training (only needed to train new models) ──────────────
+# ultralytics>=8.2           # YOLOv8 training: pip install ultralytics
+# torch>=2.2                 # PyTorch GPU: follow pytorch.org install instructions
+# torchvision>=0.17

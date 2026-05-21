@@ -1,0 +1,16 @@
+# CroixAI — STORM-FN / Fortnite Dataset Config
+path: datasets/fortnite
+train: images/train
+val:   images/val
+
+nc: 2
+names:
+  0: head    # head hitbox
+  1: body    # body (default and slim skins have different proportions)
+
+# Collection tips:
+#   - Collect in Zero Build (simpler movement) and Build mode
+#   - Include glider, emotes, vehicle exits (different silhouettes)
+#   - Wide variety of skins — the more skin diversity the better
+#   - Capture at distance (BR — targets often 50-200m away)
+#   - Min 4000 images

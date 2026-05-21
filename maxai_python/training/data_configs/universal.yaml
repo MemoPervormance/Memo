@@ -1,0 +1,19 @@
+# CroixAI — NEXUS-UNI / Universal Multi-Game Dataset Config
+# Combines all game datasets for a general-purpose model.
+# Recommended: train game-specific models instead when possible.
+path: datasets/universal
+train: images/train
+val:   images/val
+
+nc: 2
+names:
+  0: head    # enemy head across all games
+  1: body    # enemy body across all games
+
+# Collection tips:
+#   - Mix frames from ALL games (at least 1000 per game)
+#   - Valorant, CS2, Apex, Fortnite, Warzone, R6, Rust
+#   - Normalize diverse visual styles by heavy augmentation
+#   - Min 12000 total images for acceptable universal performance
+#   - Create with: python training/dataset_collector.py for each game,
+#     then merge images/ and labels/ folders into datasets/universal/

@@ -1,0 +1,16 @@
+# CroixAI — HAVOC-AX / Apex Legends Dataset Config
+path: datasets/apex
+train: images/train
+val:   images/val
+
+nc: 2
+names:
+  0: head    # head (varies by legend — Caustic/Gibby larger)
+  1: body    # body (legend-specific hitbox proportions)
+
+# Collection tips:
+#   - All legends: include tanks (Caustic, Gibraltar) and small (Wraith, Lifeline)
+#   - Zipline, slide, jump, finisher animations important
+#   - All maps: Kings Canyon, World's Edge, Olympus, Storm Point, Broken Moon
+#   - Day and night lighting (Storm Point has dynamic lighting)
+#   - Min 6000 images
