@@ -1,4 +1,4 @@
-# MAX-AI — Python dependencies
+# CroixAI — Python dependencies
 # Install: pip install -r requirements.txt
 
 # Web server

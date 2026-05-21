@@ -43,7 +43,7 @@ def create_backend(name: str, cfg=None) -> InputBackend:
         return VirtualGamepadBackend(sensitivity=sens)
 
     if name == "kernel_driver":
-        path = (cfg.input.driver_path if cfg else r"\\.\MaxAIDriver")
+        path = (cfg.input.driver_path if cfg else r"\\.\CroixAIDriver")
         from .kernel_driver import KernelDriverBackend
         return KernelDriverBackend(device_path=path)
 

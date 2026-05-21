@@ -1,0 +1,5 @@
+name = "r6"
+sensitivity = 45.0
+yaw = 0.00223
+pitch = 0.00223
+fov_scale = 1.0

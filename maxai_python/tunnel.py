@@ -11,7 +11,7 @@ import urllib.request
 from pathlib import Path
 from typing import Optional
 
-logger = logging.getLogger("maxai.tunnel")
+logger = logging.getLogger("croixai.tunnel")
 
 _CF_RELEASE_URL = (
     "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe"

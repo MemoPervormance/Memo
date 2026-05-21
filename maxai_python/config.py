@@ -181,7 +181,7 @@ class InputConfig(BaseModel):
     ghub_port: int = 12010
 
     # Kernel driver
-    driver_path: str = r"\\.\MaxAIDriver"
+    driver_path: str = r"\\.\CroixAIDriver"
 
 
 class DebugConfig(BaseModel):
@@ -218,7 +218,7 @@ def _find_config_path() -> Path:
         return local
     appdata = os.environ.get("APPDATA", "")
     if appdata:
-        remote = Path(appdata) / "maxai" / "config.toml"
+        remote = Path(appdata) / "croixai" / "config.toml"
         if remote.exists():
             return remote
     return local

@@ -1,0 +1,5 @@
+name = "warzone"
+sensitivity = 6.0
+yaw = 0.0066
+pitch = 0.0066
+fov_scale = 1.1

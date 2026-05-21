@@ -61,7 +61,7 @@ if sys.platform == "win32":
 class KernelDriverBackend(InputBackend):
     """Forwards input commands to a user-supplied kernel driver via IOCTL."""
 
-    def __init__(self, device_path: str = r"\\.\MaxAIDriver") -> None:
+    def __init__(self, device_path: str = r"\\.\CroixAIDriver") -> None:
         if sys.platform != "win32":
             raise RuntimeError("KernelDriverBackend requires Windows.")
         try:

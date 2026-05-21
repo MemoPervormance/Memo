@@ -1,0 +1,5 @@
+name = "rust"
+sensitivity = 1.0
+yaw = 0.022
+pitch = 0.022
+fov_scale = 1.0

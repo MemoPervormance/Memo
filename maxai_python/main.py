@@ -1,4 +1,4 @@
-"""MAX-AI — entry point. Backend selection, web server, assist loop."""
+"""CroixAI — entry point. Backend selection, web server, assist loop."""
 from __future__ import annotations
 import argparse
 import logging
@@ -9,7 +9,7 @@ import threading
 import webbrowser
 from pathlib import Path
 
-log_path = Path(__file__).parent / "maxai.log"
+log_path = Path(__file__).parent / "croixai.log"
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
@@ -18,7 +18,7 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout),
     ],
 )
-logger = logging.getLogger("maxai.main")
+logger = logging.getLogger("croixai.main")
 
 from config import ConfigManager, ProfileManager
 from assist_loop import AssistLoop, SharedState
@@ -36,7 +36,7 @@ PORT = int(os.environ.get("MAXAI_PORT", "17384"))
 
 def _select_backend_interactive() -> str:
     print("\n" + "=" * 58)
-    print("  MAX-AI  —  Input Backend")
+    print("  CroixAI  —  Input Backend")
     print("=" * 58)
     for i, name in enumerate(BACKEND_NAMES, 1):
         print(f"  [{i}] {BACKEND_LABELS[name]}")
@@ -52,7 +52,7 @@ def _select_backend_interactive() -> str:
 
 
 def _parse_args():
-    p = argparse.ArgumentParser(description="MAX-AI Target Tracker")
+    p = argparse.ArgumentParser(description="CroixAI Target Tracker")
     p.add_argument("--input",   choices=BACKEND_NAMES, default=None)
     p.add_argument("--port",    type=int, default=PORT)
     p.add_argument("--no-browser",  action="store_true")
@@ -70,7 +70,7 @@ def main() -> None:
     args   = _parse_args()
     port   = args.port
 
-    logger.info("MAX-AI starting…")
+    logger.info("CroixAI starting…")
 
     cfg_mgr  = ConfigManager()
     cfg      = cfg_mgr.get()
@@ -164,7 +164,7 @@ def main() -> None:
     threading.Thread(target=server.run, daemon=True, name="uvicorn").start()
     _stop.wait()
     server.should_exit = True
-    logger.info("MAX-AI exiting.")
+    logger.info("CroixAI exiting.")
 
 
 if __name__ == "__main__":

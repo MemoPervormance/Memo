@@ -1,4 +1,4 @@
-# MAX-AI — config.toml example
+# CroixAI — config.toml example
 # Copy as config.toml next to main.py
 
 [capture]
@@ -127,7 +127,7 @@ serial_baud  = 115200
 kmbox_ip     = "192.168.2.188"
 kmbox_port   = 1408
 ghub_port    = 12010
-driver_path  = "\\\\.\\MaxAIDriver"
+driver_path  = "\\\\.\\CroixAIDriver"
 
 [debug]
 show_fps        = false

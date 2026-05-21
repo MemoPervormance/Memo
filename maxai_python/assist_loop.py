@@ -20,7 +20,7 @@ from overlay import OverlayWindow
 from input_backends import InputBackend
 import hotkeys
 
-logger = logging.getLogger("maxai.loop")
+logger = logging.getLogger("croixai.loop")
 
 
 @dataclass

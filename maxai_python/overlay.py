@@ -97,7 +97,7 @@ class OverlayWindow:
         wnd_class = win32gui.WNDCLASS()
         wnd_class.lpfnWndProc = win32gui.DefWindowProc
         wnd_class.hInstance   = win32api.GetModuleHandle(None)
-        wnd_class.lpszClassName = "MaxAIOverlay"
+        wnd_class.lpszClassName = "CroixAIOverlay"
         try:
             win32gui.RegisterClass(wnd_class)
         except Exception:
@@ -105,7 +105,7 @@ class OverlayWindow:
 
         hwnd = win32gui.CreateWindowEx(
             WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_NOACTIVATE,
-            "MaxAIOverlay", "",
+            "CroixAIOverlay", "",
             WS_POPUP | WS_VISIBLE,
             0, 0, sw, sh,
             None, None, wnd_class.hInstance, None,

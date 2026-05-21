@@ -5,10 +5,10 @@ import threading
 import time
 from typing import Optional
 
-logger = logging.getLogger("maxai.discord")
+logger = logging.getLogger("croixai.discord")
 
 APP_ID = "1491143865812516984"
-_ASSET_KEY = "maxai_logo"
+_ASSET_KEY = "croixai_logo"
 
 
 class DiscordRPC:
@@ -61,10 +61,10 @@ class DiscordRPC:
                 if self._connected and self._rpc:
                     try:
                         self._rpc.update(
-                            details="MAX-AI",
-                            state="Spielt MAX-AI",
+                            details="CroixAI",
+                            state="Spielt CroixAI",
                             large_image=_ASSET_KEY,
-                            large_text="MAX-AI",
+                            large_text="CroixAI",
                         )
                     except Exception as exc:
                         logger.debug(f"Discord RPC update failed: {exc}")

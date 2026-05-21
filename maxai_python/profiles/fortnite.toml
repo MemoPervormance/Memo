@@ -1,0 +1,5 @@
+name = "fortnite"
+sensitivity = 0.12
+yaw = 0.5
+pitch = 0.5
+fov_scale = 1.0

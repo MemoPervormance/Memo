@@ -1,4 +1,4 @@
-"""FastAPI web server — REST API including game profile routes."""
+"""FastAPI web server — REST API including game profile, setup wizard, and presets routes."""
 from __future__ import annotations
 import logging
 from pathlib import Path
@@ -10,8 +10,10 @@ from fastapi.staticfiles import StaticFiles
 
 from assist_loop import AssistLoop, SharedState
 from config import ConfigManager, ProfileManager
+from setup_wizard import check_all, check_driver, install_driver, get_install_progress, SETUP_GUIDE
+from game_presets import GAME_PRESETS, get_preset, apply_preset
 
-logger = logging.getLogger("maxai.web")
+logger = logging.getLogger("croixai.web")
 _HTML_PATH = Path(__file__).parent / "static" / "web_ui.html"
 
 
@@ -24,7 +26,7 @@ def create_app(
     app_stop_fn=None,
 ) -> FastAPI:
 
-    app = FastAPI(title="MAX-AI", docs_url=None, redoc_url=None)
+    app = FastAPI(title="CroixAI", docs_url=None, redoc_url=None)
 
     static_dir = Path(__file__).parent / "static"
     if static_dir.exists():
@@ -39,7 +41,7 @@ def create_app(
     async def index():
         if _HTML_PATH.exists():
             return HTMLResponse(_HTML_PATH.read_text(encoding="utf-8"))
-        return HTMLResponse("<h1>MAX-AI</h1><p>web_ui.html not found.</p>")
+        return HTMLResponse("<h1>CroixAI</h1><p>web_ui.html not found.</p>")
 
     # ------------------------------------------------------------------
     # GET /x/s  — Status
@@ -157,5 +159,53 @@ def create_app(
         if not ok:
             raise HTTPException(400, "Cannot delete — profile not found or is 'default'")
         return JSONResponse({"ok": True})
+
+    # ------------------------------------------------------------------
+    # Setup Wizard
+    # ------------------------------------------------------------------
+    @app.get("/x/setup/check")
+    async def setup_check():
+        return JSONResponse({"drivers": check_all(), "guide": SETUP_GUIDE})
+
+    @app.get("/x/setup/check/{driver_id}")
+    async def setup_check_one(driver_id: str):
+        return JSONResponse(check_driver(driver_id))
+
+    @app.post("/x/setup/install/{driver_id}")
+    async def setup_install(driver_id: str):
+        current = get_install_progress(driver_id)
+        if current.startswith("starting") or current == "Installing":
+            return JSONResponse({"ok": False, "reason": "already installing"})
+        install_driver(driver_id)
+        return JSONResponse({"ok": True, "status": "started"})
+
+    @app.get("/x/setup/progress/{driver_id}")
+    async def setup_progress(driver_id: str):
+        return JSONResponse({"status": get_install_progress(driver_id)})
+
+    # ------------------------------------------------------------------
+    # Game Presets
+    # ------------------------------------------------------------------
+    @app.get("/x/presets")
+    async def list_presets():
+        safe = [
+            {k: v for k, v in p.items() if k != "config"}
+            for p in GAME_PRESETS
+        ]
+        return JSONResponse({"presets": safe})
+
+    @app.get("/x/presets/{game_id}")
+    async def get_preset_detail(game_id: str):
+        p = get_preset(game_id)
+        if not p:
+            raise HTTPException(404, f"Preset '{game_id}' not found")
+        return JSONResponse(p)
+
+    @app.post("/x/presets/{game_id}/apply")
+    async def apply_game_preset(game_id: str):
+        ok = apply_preset(game_id, config_mgr)
+        if not ok:
+            raise HTTPException(404, f"Preset '{game_id}' not found")
+        return JSONResponse({"ok": True, "applied": game_id})
 
     return app
