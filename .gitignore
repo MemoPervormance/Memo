@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.spec
+logs/
+screenshots/
+models/*.onnx
+models/*.engine
+datasets/
+.env
+*.log
