@@ -284,24 +284,19 @@ def apply_preset(game_id: str, config_mgr) -> bool:
     if preset is None:
         return False
 
-    cfg = config_mgr.load()
+    cfg = config_mgr.get()
     flat = preset["config"]
 
-    # Walk dotted keys and set on nested pydantic models
-    import copy
     raw = cfg.model_dump()
 
     for dotkey, val in flat.items():
         parts = dotkey.split(".")
         node = raw
         for part in parts[:-1]:
-            if part not in node:
-                node[part] = {}
-            node = node[part]
+            node = node.setdefault(part, {})
         node[parts[-1]] = val
 
-    # Rebuild from dict and save
-    from config import Config
-    new_cfg = Config.model_validate(raw)
-    config_mgr.save(new_cfg)
+    from config import AppConfig
+    config_mgr._cfg = AppConfig.model_validate(raw)
+    config_mgr.save()
     return True
