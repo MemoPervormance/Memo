@@ -207,7 +207,8 @@ nav button.active{color:var(--acc2);border-left-color:var(--acc2);background:var
     <div class="stat-box"><div class="sl">FPS</div><div class="sv" id="s-fps">0</div></div>
     <div class="stat-box"><div class="sl">Targets</div><div class="sv" id="s-det">0</div></div>
     <div class="stat-box"><div class="sl">Loop</div><div class="sv" id="s-run">—</div></div>
-    <div class="stat-box"><div class="sl">Assist</div><div class="sv" id="s-aim">—</div></div>
+    <div class="stat-box"><div class="sl">Aim Mode</div><div class="sv" id="s-aim" style="font-size:11px">—</div></div>
+    <div class="stat-box"><div class="sl">Locked</div><div class="sv" id="s-lock">—</div></div>
     <div class="stat-box"><div class="sl">Provider</div><div class="sv" id="s-prov" style="font-size:11px">—</div></div>
     <div class="stat-box"><div class="sl">Input</div><div class="sv" id="s-back" style="font-size:11px">—</div></div>
     <div class="stat-box"><div class="sl">Capture</div><div class="sv" id="s-cap" style="font-size:11px">—</div></div>
@@ -697,7 +698,9 @@ function updateStatus(st) {
   sv('h-fps',  st.fps??0); sv('s-fps', st.fps??0);
   sv('h-det',  st.detection_count??0); sv('s-det', st.detection_count??0);
   sv('s-run',  st.running?'✓ ON':'✗ OFF');
-  sv('s-aim',  st.aim_active?'✓ Active':'—');
+  const modeLabels={flick:'⚡ Flick',bezier_track:'〜 Track',snap_lock:'🔒 Locked'};
+  sv('s-aim',  st.aim_active?(modeLabels[st.aim_mode]||st.aim_mode||'Active'):'—');
+  sv('s-lock', st.aim_locked?'🔒 HEAD':'—');
   ['s-prov','h-prov'].forEach(id=>document.getElementById(id).textContent=st.provider||'—');
   ['s-back','h-back'].forEach(id=>document.getElementById(id).textContent=st.input_backend||'—');
   document.getElementById('s-cap').textContent  = st.capture_backend||'—';

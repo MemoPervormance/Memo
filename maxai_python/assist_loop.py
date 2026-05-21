@@ -52,6 +52,8 @@ class SharedState:
                 "fps":              round(self.fps, 1),
                 "detection_count":  self.detection_count,
                 "aim_active":       self.aim_active,
+                "aim_mode":         getattr(self, "aim_mode", "—"),
+                "aim_locked":       getattr(self, "aim_locked", False),
                 "status_text":      self.status_text,
                 "model_path":       self.model_path,
                 "model_found":      self.model_found,
@@ -299,6 +301,11 @@ class AssistLoop:
                         priority_classes=cfg.detection.priority_classes or None,
                         target_classes=cfg.detection.target_classes or None,
                         scoped=scoped,
+                    )
+                    # Expose aim mode to status UI
+                    self._state.set(
+                        aim_mode=aligner.current_mode(),
+                        aim_locked=aligner.is_locked(),
                     )
                     if cfg.aim.prediction.enabled and cfg.overlay.future_dots:
                         best = detections[0]
