@@ -1,4 +1,8 @@
-"""YOLO ONNX detection engine — provider selection, preprocess, NMS, postprocess."""
+"""
+YOLO ONNX / TensorRT detection engine.
+Supports .onnx (DML/CUDA/CPU) and .engine (TensorRT) models.
+Provider priority: TRT → CUDA → DML → CPU.
+"""
 from __future__ import annotations
 import os
 import sys
@@ -38,20 +42,20 @@ class Detection:
         return self.x1, self.y1, self.x2, self.y2
 
 
+# ---------------------------------------------------------------------------
+# ORT runtime selection
+# ---------------------------------------------------------------------------
+
 def _select_ort_runtime() -> str:
-    """Mirror Rust select_ort_runtime: prefer GPU DLL, fall back to CPU."""
     base = Path(sys.executable).parent
-    gpu_dll   = base / "onnxruntime_gpu.dll"
-    std_dll   = base / "onnxruntime.dll"
-    cpu_dll   = base / "onnxruntime_cpu.dll"
+    gpu_dll = base / "onnxruntime_gpu.dll"
+    std_dll = base / "onnxruntime.dll"
+    cpu_dll = base / "onnxruntime_cpu.dll"
 
     cuda_path = os.environ.get("CUDA_PATH", "")
-    has_cuda_cudnn = False
-    if cuda_path:
-        cudnn_candidates = list(Path(cuda_path, "bin").glob("cudnn*.dll"))
-        has_cuda_cudnn = bool(cudnn_candidates)
+    has_cudnn = bool(cuda_path and list(Path(cuda_path, "bin").glob("cudnn*.dll")))
 
-    if has_cuda_cudnn and gpu_dll.exists():
+    if has_cudnn and gpu_dll.exists():
         os.environ["ORT_DYLIB_PATH"] = str(gpu_dll)
         return "gpu"
     if std_dll.exists():
@@ -63,31 +67,57 @@ def _select_ort_runtime() -> str:
     return "default"
 
 
-def _build_session(model_path: str, use_cuda: bool, use_tensorrt: bool):
+def _build_session(
+    model_path: str,
+    use_cuda: bool,
+    use_tensorrt: bool,
+    blob_size: int,
+):
     """Create ORT InferenceSession with best available provider."""
     import onnxruntime as ort  # type: ignore[import]
 
+    is_engine = model_path.lower().endswith(".engine")
+
     providers = []
-    if use_tensorrt:
-        providers.append("TensorrtExecutionProvider")
-    if use_cuda:
+    if use_tensorrt or is_engine:
+        trt_opts = {
+            "trt_engine_cache_enable": True,
+            "trt_engine_cache_path": str(Path(model_path).parent),
+            "trt_max_workspace_size": 1 << 30,
+        }
+        if is_engine:
+            trt_opts["trt_engine_cache_path"] = str(Path(model_path).parent)
+        providers.append(("TensorrtExecutionProvider", trt_opts))
+
+    if use_cuda and not is_engine:
         providers.append("CUDAExecutionProvider")
-    providers.append("DmlExecutionProvider")
+
+    if not is_engine:
+        providers.append("DmlExecutionProvider")
+
     providers.append("CPUExecutionProvider")
 
     available = ort.get_available_providers()
-    selected = [p for p in providers if p in available]
+    selected: list = []
+    for p in providers:
+        name = p[0] if isinstance(p, tuple) else p
+        if name in available:
+            selected.append(p)
     if not selected:
         selected = ["CPUExecutionProvider"]
 
     opts = ort.SessionOptions()
     opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     session = ort.InferenceSession(model_path, sess_options=opts, providers=selected)
-    return session, selected[0]
+    provider_used = selected[0][0] if isinstance(selected[0], tuple) else selected[0]
+    return session, provider_used
 
+
+# ---------------------------------------------------------------------------
+# NMS
+# ---------------------------------------------------------------------------
 
 def _nms(boxes: np.ndarray, scores: np.ndarray, iou_thresh: float) -> List[int]:
-    """Non-maximum suppression, returns kept indices."""
     if len(boxes) == 0:
         return []
     x1, y1, x2, y2 = boxes[:, 0], boxes[:, 1], boxes[:, 2], boxes[:, 3]
@@ -106,13 +136,17 @@ def _nms(boxes: np.ndarray, scores: np.ndarray, iou_thresh: float) -> List[int]:
         iy2 = np.minimum(y2[i], y2[rest])
         inter = np.maximum(0, ix2 - ix1) * np.maximum(0, iy2 - iy1)
         union = areas[i] + areas[rest] - inter
-        iou = np.where(union > 0, inter / union, 0.0)
+        iou   = np.where(union > 0, inter / union, 0.0)
         order = rest[iou <= iou_thresh]
     return keep
 
 
+# ---------------------------------------------------------------------------
+# YOLODetector
+# ---------------------------------------------------------------------------
+
 class YOLODetector:
-    """ONNX-based YOLO detector. Thread-safe for single-threaded inference."""
+    """ONNX/TRT YOLO detector — thread-safe single-threaded inference."""
 
     def __init__(
         self,
@@ -122,23 +156,34 @@ class YOLODetector:
         max_detections: int = 10,
         use_cuda: bool = True,
         use_tensorrt: bool = False,
+        blob_size: int = 320,
     ) -> None:
         self._conf_thresh = confidence_threshold
         self._nms_thresh  = nms_threshold
         self._max_det     = max_detections
+        self._blob_size   = blob_size
         self._provider    = "none"
-        self._input_name: str = ""
-        self._model_w = 640
-        self._model_h = 640
+        self._input_name  = ""
+        self._model_h     = blob_size
+        self._model_w     = blob_size
 
         _select_ort_runtime()
-        self._session, self._provider = _build_session(model_path, use_cuda, use_tensorrt)
+        self._session, self._provider = _build_session(
+            model_path, use_cuda, use_tensorrt, blob_size
+        )
         meta = self._session.get_inputs()[0]
         self._input_name = meta.name
-        shape = meta.shape  # [1, 3, H, W] or similar
+        shape = meta.shape
         if len(shape) == 4:
-            self._model_h = int(shape[2]) if isinstance(shape[2], int) else 640
-            self._model_w = int(shape[3]) if isinstance(shape[3], int) else 640
+            h = shape[2]; w = shape[3]
+            if isinstance(h, int) and h > 0:
+                self._model_h = h
+            else:
+                self._model_h = blob_size
+            if isinstance(w, int) and w > 0:
+                self._model_w = w
+            else:
+                self._model_w = blob_size
 
         # Warmup
         dummy = np.zeros((1, 3, self._model_h, self._model_w), dtype=np.float32)
@@ -156,34 +201,28 @@ class YOLODetector:
         offset_y: int = 0,
         target_classes: Optional[List[int]] = None,
     ) -> List[Detection]:
-        """
-        Run inference on a BGRA frame, return detections in screen coordinates.
-        offset_x/y = crop top-left on screen.
-        """
-        tensor = self._preprocess(frame_bgra)
+        tensor  = self._preprocess(frame_bgra)
         outputs = self._session.run(None, {self._input_name: tensor})
         return self._postprocess(outputs, offset_x, offset_y, target_classes or [])
 
     # ------------------------------------------------------------------
 
     def _preprocess(self, frame_bgra: np.ndarray) -> np.ndarray:
-        """BGR→RGB, resize to model dims, /255, CHW, batch dim."""
         h, w = frame_bgra.shape[:2]
-        rgb = frame_bgra[:, :, :3][:, :, ::-1]  # BGRA → RGB (drop alpha, reverse channels)
+        rgb   = frame_bgra[:, :, :3][:, :, ::-1]   # BGRA → RGB
         if h != self._model_h or w != self._model_w:
-            # Simple resize via numpy (no cv2 dependency)
             try:
                 from PIL import Image  # type: ignore[import]
-                img = Image.fromarray(rgb).resize((self._model_w, self._model_h), Image.BILINEAR)
+                img = Image.fromarray(rgb).resize(
+                    (self._model_w, self._model_h), Image.BILINEAR
+                )
                 rgb = np.array(img)
             except ImportError:
-                # Nearest-neighbour fallback
-                row_idx = (np.arange(self._model_h) * h / self._model_h).astype(int)
-                col_idx = (np.arange(self._model_w) * w / self._model_w).astype(int)
-                rgb = rgb[row_idx][:, col_idx]
-        tensor = rgb.astype(np.float32) / 255.0
-        tensor = tensor.transpose(2, 0, 1)[np.newaxis]  # (1,3,H,W)
-        return np.ascontiguousarray(tensor)
+                ri = (np.arange(self._model_h) * h / self._model_h).astype(int)
+                ci = (np.arange(self._model_w) * w / self._model_w).astype(int)
+                rgb = rgb[ri][:, ci]
+        t = rgb.astype(np.float32) / 255.0
+        return np.ascontiguousarray(t.transpose(2, 0, 1)[np.newaxis])
 
     def _postprocess(
         self,
@@ -191,26 +230,18 @@ class YOLODetector:
         ox: int, oy: int,
         target_classes: List[int],
     ) -> List[Detection]:
-        raw = outputs[0]  # shape (1, N, 5+C) or (1, 5+C, N)
+        raw = outputs[0]
 
         if raw.ndim == 3:
-            if raw.shape[1] > raw.shape[2]:
-                # (1, N, 5+C) standard format
-                data = raw[0]
-            else:
-                # (1, 5+C, N) transposed
-                data = raw[0].T
+            data = raw[0] if raw.shape[1] > raw.shape[2] else raw[0].T
         else:
             return []
 
-        # data: (N, 5+C)  cols: cx, cy, w, h, obj, cls...
         if data.shape[1] < 5:
             return []
 
-        # Determine if format is (cx,cy,w,h,obj,cls) or (cx,cy,w,h,cls_scores...)
         n_extra = data.shape[1] - 4
         if n_extra == 1:
-            # Only objectness, no class scores
             obj  = data[:, 4]
             cls  = np.zeros(len(data), dtype=int)
             conf = obj
@@ -225,22 +256,20 @@ class YOLODetector:
         if len(data) == 0:
             return []
 
-        # cx,cy,w,h → x1,y1,x2,y2 in crop-space
         cxs, cys, ws, hs = data[:, 0], data[:, 1], data[:, 2], data[:, 3]
-        # Normalised vs pixel — detect by value range
         if cxs.max() <= 1.5:
             cxs = cxs * self._model_w
             cys = cys * self._model_h
             ws  = ws  * self._model_w
             hs  = hs  * self._model_h
+
         x1s = cxs - ws / 2
         y1s = cys - hs / 2
         x2s = cxs + ws / 2
         y2s = cys + hs / 2
 
-        boxes  = np.stack([x1s, y1s, x2s, y2s], axis=1)
-        kept   = _nms(boxes, conf, self._nms_thresh)
-        kept   = kept[: self._max_det]
+        boxes = np.stack([x1s, y1s, x2s, y2s], axis=1)
+        kept  = _nms(boxes, conf, self._nms_thresh)[: self._max_det]
 
         results: List[Detection] = []
         for i in kept:

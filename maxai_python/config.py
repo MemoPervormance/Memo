@@ -1,20 +1,36 @@
-"""Config management — TOML schema, load/save, live-reload, pydantic models."""
+"""
+Config management — full product spec schema with Pydantic + TOML.
+Supports Game Profiles, all capture/input backends, predictions, overlay, recoil, wind-mouse.
+"""
 from __future__ import annotations
 import os
+import re
 import threading
-import time
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import toml
 from pydantic import BaseModel, Field
 
 
+# ---------------------------------------------------------------------------
+# Sub-models
+# ---------------------------------------------------------------------------
+
 class CaptureConfig(BaseModel):
+    backend: str = "dxgi"         # dxgi / winrt / capture_card / udp / ndi
     monitor: int = 0
-    capture_size: int = 320
+    capture_size: int = 320       # blob size: 160 / 320 / 640
     fps_limit: int = 0
     steady_fps: int = 100
+    circle_mask: bool = False
+    # UDP capture
+    udp_host: str = "0.0.0.0"
+    udp_port: int = 9999
+    # NDI
+    ndi_source: str = ""
+    # Capture card (DirectShow source name)
+    capture_card_source: str = ""
 
 
 class PredictionConfig(BaseModel):
@@ -23,6 +39,30 @@ class PredictionConfig(BaseModel):
     min_speed: float = 30.0
     max_offset: float = 25.0
     lead_max_jump: float = 120.0
+    interval: float = 0.0         # 0.00–0.50 s lookahead step
+    future_positions: int = 5     # 1–40 dots to project
+
+
+class RecoilConfig(BaseModel):
+    enabled: bool = False
+    strength: float = 1.0         # 0.1–10.0
+    smoothness: float = 2.0
+
+
+class WindMouseConfig(BaseModel):
+    enabled: bool = False
+    gravity: float = 9.0
+    wind: float = 3.0
+    min_wait: float = 2.0
+    max_wait: float = 10.0
+    max_step: float = 8.0
+    target_area: float = 8.0
+
+
+class StickyTargetConfig(BaseModel):
+    enabled: bool = False
+    hold_duration: float = 1.5    # seconds before switching target
+    static_filter: bool = False   # ignore stationary targets
 
 
 class AimConfig(BaseModel):
@@ -30,23 +70,41 @@ class AimConfig(BaseModel):
     aim_key: str = "mouse5"
     toggle_key: str = "f6"
     exit_key: str = "f12"
-    fov_radius: float = 200.0
+    pause_key: str = "pause"
+    overlay_key: str = "insert"
+    screenshot_key: str = "f8"
+
+    position: str = "head"        # head / body
+    fov_x: float = 60.0          # 10–120
+    fov_y: float = 60.0
+    speed: float = 1.0            # 0.1–3.0
+    auto_aim: bool = False
+    auto_shoot: bool = False
+    snap_radius: float = 22.0
+    near_radius: float = 80.0
+    scope_multiplier: float = 1.0
+
+    head_from_top: float = 0.10
     aim_smoothness: float = 1.0
     aim_speed: float = 0.001
-    head_from_top: float = 0.10
-    snap_zone_px: float = 22.0
-    prediction: PredictionConfig = Field(default_factory=PredictionConfig)
+
+    sticky_target: StickyTargetConfig = Field(default_factory=StickyTargetConfig)
+    prediction: PredictionConfig   = Field(default_factory=PredictionConfig)
+    recoil: RecoilConfig           = Field(default_factory=RecoilConfig)
+    wind_mouse: WindMouseConfig    = Field(default_factory=WindMouseConfig)
 
 
 class DetectionConfig(BaseModel):
+    backend: str = "dml"           # dml / trt
     model_path: str = "model.onnx"
-    confidence_threshold: float = 0.5
+    confidence_threshold: float = 0.5   # 0.10–1.0
     nms_threshold: float = 0.45
     target_classes: List[int] = Field(default_factory=list)
     priority_classes: List[int] = Field(default_factory=list)
     use_cuda: bool = True
     use_tensorrt: bool = False
     max_detections: int = 10
+    blob_size: int = 320           # 160 / 320 / 640
 
 
 class ControllerConfig(BaseModel):
@@ -81,6 +139,51 @@ class TriggerbotConfig(BaseModel):
     sample_size: int = 5
 
 
+class OverlayConfig(BaseModel):
+    enabled: bool = False
+    detection_boxes: bool = True
+    box_color: str = "#FF0000"     # hex
+    box_thickness: int = 2
+    future_dots: bool = False
+    future_dot_color: str = "#00FF00"
+    capture_border: bool = False
+    target_icons: bool = False
+    target_icon_path: str = ""
+    opacity: float = 0.8
+
+
+class GameProfileConfig(BaseModel):
+    name: str
+    sensitivity: float = 1.0
+    yaw: float = 0.022             # deg/count
+    pitch: float = 0.022
+    fov_scale: float = 1.0
+    aim: AimConfig = Field(default_factory=AimConfig)
+    detection: DetectionConfig = Field(default_factory=DetectionConfig)
+    triggerbot: TriggerbotConfig = Field(default_factory=TriggerbotConfig)
+    overlay: OverlayConfig = Field(default_factory=OverlayConfig)
+
+
+class InputConfig(BaseModel):
+    backend: str = "relative_mouse"
+    # relative_mouse / virtual_gamepad / kernel_driver /
+    # ghub / arduino / kmbox_net / makcu / rp2040 / rp2350 / titan_two
+
+    # Serial backends (arduino / makcu / rp2040 / rp2350)
+    serial_port: str = "COM3"
+    serial_baud: int = 115200
+
+    # KMBOX Net
+    kmbox_ip: str = "192.168.2.188"
+    kmbox_port: int = 1408
+
+    # G-Hub (Logitech)
+    ghub_port: int = 12010
+
+    # Kernel driver
+    driver_path: str = r"\\.\MaxAIDriver"
+
+
 class DebugConfig(BaseModel):
     show_fps: bool = False
     show_detections: bool = False
@@ -98,12 +201,18 @@ class AppConfig(BaseModel):
     controller: ControllerConfig = Field(default_factory=ControllerConfig)
     crosshair: CrosshairConfig = Field(default_factory=CrosshairConfig)
     triggerbot: TriggerbotConfig = Field(default_factory=TriggerbotConfig)
+    overlay: OverlayConfig = Field(default_factory=OverlayConfig)
+    input: InputConfig = Field(default_factory=InputConfig)
     debug: DebugConfig = Field(default_factory=DebugConfig)
     info: InfoConfig = Field(default_factory=InfoConfig)
+    active_profile: str = "default"
 
+
+# ---------------------------------------------------------------------------
+# File helpers
+# ---------------------------------------------------------------------------
 
 def _find_config_path() -> Path:
-    # Priority: beside script, then %APPDATA%/maxai/
     local = Path(__file__).parent / "config.toml"
     if local.exists():
         return local
@@ -112,27 +221,20 @@ def _find_config_path() -> Path:
         remote = Path(appdata) / "maxai" / "config.toml"
         if remote.exists():
             return remote
-    return local  # default write location
+    return local
 
 
 def _parse_capture_size_from_model(model_path: str) -> Optional[int]:
-    """Parse capture size from model filename, e.g. model_320.onnx → 320."""
-    import re
-    name = Path(model_path).stem
-    m = re.search(r"_(\d+)$", name)
-    if m:
-        return int(m.group(1))
-    return None
+    m = re.search(r"_(\d+)(?:\.onnx|\.engine)$", Path(model_path).name)
+    return int(m.group(1)) if m else None
 
 
 def load_config(path: Optional[Path] = None) -> AppConfig:
     p = path or _find_config_path()
     if not p.exists():
-        cfg = AppConfig()
-        return cfg
+        return AppConfig()
     raw = toml.load(str(p))
     cfg = AppConfig.model_validate(raw)
-    # Auto-detect capture_size from model filename
     auto_size = _parse_capture_size_from_model(cfg.detection.model_path)
     if auto_size and auto_size != cfg.capture.capture_size:
         cfg.capture.capture_size = auto_size
@@ -142,14 +244,102 @@ def load_config(path: Optional[Path] = None) -> AppConfig:
 def save_config(cfg: AppConfig, path: Optional[Path] = None) -> None:
     p = path or _find_config_path()
     p.parent.mkdir(parents=True, exist_ok=True)
-    data = cfg.model_dump()
     with open(p, "w", encoding="utf-8") as f:
-        toml.dump(data, f)
+        toml.dump(cfg.model_dump(), f)
 
+
+# ---------------------------------------------------------------------------
+# Game Profile Manager
+# ---------------------------------------------------------------------------
+
+class ProfileManager:
+    """
+    Manages named game profiles stored as separate TOML files in profiles/ dir.
+    Each profile overrides aim/detection/triggerbot/overlay per game.
+    """
+
+    def __init__(self, base_dir: Optional[Path] = None) -> None:
+        self._dir = (base_dir or Path(__file__).parent) / "profiles"
+        self._dir.mkdir(exist_ok=True)
+        self._lock = threading.Lock()
+        self._profiles: Dict[str, GameProfileConfig] = {}
+        self._active = "default"
+        self._load_all()
+
+    def _load_all(self) -> None:
+        for f in self._dir.glob("*.toml"):
+            try:
+                raw = toml.load(str(f))
+                name = f.stem
+                raw.setdefault("name", name)
+                self._profiles[name] = GameProfileConfig.model_validate(raw)
+            except Exception:
+                pass
+        if "default" not in self._profiles:
+            self._profiles["default"] = GameProfileConfig(name="default")
+
+    def list_profiles(self) -> List[str]:
+        with self._lock:
+            return sorted(self._profiles.keys())
+
+    def get(self, name: str) -> Optional[GameProfileConfig]:
+        with self._lock:
+            return self._profiles.get(name)
+
+    def get_active(self) -> GameProfileConfig:
+        with self._lock:
+            return self._profiles.get(self._active, GameProfileConfig(name="default"))
+
+    def switch(self, name: str) -> bool:
+        with self._lock:
+            if name not in self._profiles:
+                return False
+            self._active = name
+            return True
+
+    def create(self, name: str) -> GameProfileConfig:
+        with self._lock:
+            if name in self._profiles:
+                return self._profiles[name]
+            p = GameProfileConfig(name=name)
+            self._profiles[name] = p
+            self._save_profile(p)
+            return p
+
+    def save_profile(self, profile: GameProfileConfig) -> None:
+        with self._lock:
+            self._profiles[profile.name] = profile
+            self._save_profile(profile)
+
+    def delete(self, name: str) -> bool:
+        if name == "default":
+            return False
+        with self._lock:
+            if name not in self._profiles:
+                return False
+            del self._profiles[name]
+            f = self._dir / f"{name}.toml"
+            if f.exists():
+                f.unlink()
+            if self._active == name:
+                self._active = "default"
+            return True
+
+    def _save_profile(self, profile: GameProfileConfig) -> None:
+        f = self._dir / f"{profile.name}.toml"
+        with open(f, "w", encoding="utf-8") as fh:
+            toml.dump(profile.model_dump(), fh)
+
+    @property
+    def active_name(self) -> str:
+        return self._active
+
+
+# ---------------------------------------------------------------------------
+# ConfigManager
+# ---------------------------------------------------------------------------
 
 class ConfigManager:
-    """Thread-safe live-reloading config manager."""
-
     def __init__(self, path: Optional[Path] = None) -> None:
         self._path = path or _find_config_path()
         self._lock = threading.RLock()

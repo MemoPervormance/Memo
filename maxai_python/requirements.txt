@@ -1,10 +1,41 @@
+# MAX-AI — Python dependencies
+# Install: pip install -r requirements.txt
+
+# Web server
 fastapi>=0.110
 uvicorn[standard]>=0.27
-onnxruntime-gpu>=1.17
+
+# ONNX inference
+onnxruntime-gpu>=1.17       # CUDA/TRT — swap for onnxruntime-directml if no CUDA
+
+# Numerics / image
 numpy>=1.26
+Pillow>=10.0
+
+# Config
 toml>=0.10
 pydantic>=2.0
-pypresence>=4.3
+
+# Screen capture
+dxcam>=0.0.5                # primary DXGI capture
+
+# Serial backends (Arduino, MAKCU, RP2040, Titan Two)
+pyserial>=3.5
+
+# Virtual gamepad (optional)
 pyvigem>=0.0.6
-dxcam>=0.0.5
-Pillow>=10.0
+
+# Capture card backend (optional)
+opencv-python>=4.9
+
+# Win32 overlay + hotkeys
+pywin32>=306
+
+# Discord RPC (optional)
+pypresence>=4.3
+
+# WinRT capture (optional)
+# windows-capture>=1.2       # uncomment if using WinRT backend
+
+# NDI capture (optional)
+# ndi-python>=0.1            # uncomment + install NDI SDK runtime
