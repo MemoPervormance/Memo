@@ -135,18 +135,12 @@ def main() -> None:
         cfg_mgr.update({"detection": {"model_path": first}})
         print(f"  → Model automatisch gesetzt: {found_models[0]}")
 
-    # Input backend
-    backend_name = args.input or _select_backend_interactive()
+    # Input backend — selection saved to config so UI can change it later
+    backend_name = args.input or cfg.input.backend or _select_backend_interactive()
+    # Save selection to config so web UI reflects current backend
+    cfg_mgr.update({"input": {"backend": backend_name}})
     logger.info(f"Input backend: {backend_name}")
     print(f"\n  Backend: {BACKEND_LABELS.get(backend_name, backend_name)}")
-
-    try:
-        backend = create_backend(backend_name, cfg)
-    except Exception as exc:
-        logger.error(f"Backend init failed: {exc}")
-        print(f"\n  [FEHLER] Backend konnte nicht gestartet werden: {exc}")
-        print("  Tipp: Anderes Backend wählen oder INSTALL.bat ausführen.\n")
-        sys.exit(1)
 
     state = SharedState(
         input_backend_name=backend_name,
@@ -155,7 +149,17 @@ def main() -> None:
     )
 
     def loop_factory() -> AssistLoop:
-        return AssistLoop(state, cfg_mgr, prof_mgr, backend, backend_name)
+        # Re-read backend from config so UI changes take effect on loop restart
+        current_cfg = cfg_mgr.get()
+        cur_backend_name = current_cfg.input.backend or backend_name
+        try:
+            cur_backend = create_backend(cur_backend_name, current_cfg)
+        except Exception as exc:
+            logger.error(f"Backend init failed ({cur_backend_name}): {exc}")
+            cur_backend = create_backend("relative_mouse", current_cfg)
+            cur_backend_name = "relative_mouse"
+        state.set(input_backend_name=cur_backend_name)
+        return AssistLoop(state, cfg_mgr, prof_mgr, cur_backend, cur_backend_name)
 
     # Tunnel
     tunnel: TunnelManager | None = None
@@ -190,7 +194,6 @@ def main() -> None:
             discord.stop()
         if tunnel:
             tunnel.stop()
-        backend.release_all()
 
     signal.signal(signal.SIGINT,  _shutdown)
     signal.signal(signal.SIGTERM, _shutdown)

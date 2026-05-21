@@ -180,14 +180,14 @@ class AutoFireModule:
             on_target = self._color_check(target, frame_bgra, crop_offset)
 
         # Pixel variance visibility check
-        if on_target and cfg.visibility_check and frame_bgra is not None:
+        if on_target and cfg.color_check and frame_bgra is not None:
             on_target = self._variance_check(target, frame_bgra, crop_offset, cfg)
 
         # Confidence distance weighting: boost effective confidence when target is centred
         if on_target and target is not None:
             dist_frac = self._distance_fraction(target, screen_cx, screen_cy, cfg)
             effective_conf = target.confidence + (1.0 - dist_frac) * 0.08
-            if effective_conf < cfg.min_confidence:
+            if effective_conf < cfg.confidence_threshold:
                 on_target = False
 
         if on_target and zone:
@@ -209,7 +209,7 @@ class AutoFireModule:
                     self._state = _State.DELAY
                     self._state_start = now
                     # Humanized delay: apply head-zone speedup + random jitter
-                    base = cfg.delay_ms
+                    base = cfg.fire_delay_ms
                     if self._current_zone == "head":
                         base *= self._head_delay_mult
                     jitter = random.uniform(-self._jitter_ms, self._jitter_ms)
@@ -236,7 +236,7 @@ class AutoFireModule:
             should_fire = self._check_shot_schedule(now)
             if self._fire_mode == FireMode.AUTO:
                 elapsed_ms = (now - self._state_start) * 1000
-                burst = cfg.burst_ms + random.uniform(-4, 4)
+                burst = cfg.burst_frames * 16.667 + random.uniform(-4, 4)
                 if elapsed_ms >= burst:
                     self._state = _State.COOLDOWN
                     self._state_start = now
@@ -293,7 +293,7 @@ class AutoFireModule:
         best_priority = 0
 
         for det in detections:
-            if det.confidence < cfg.min_confidence * 0.85:
+            if det.confidence < cfg.confidence_threshold * 0.85:
                 continue
 
             # Compute head-zone box (top N% of bounding box)
@@ -304,14 +304,14 @@ class AutoFireModule:
             # Check head zone (priority 2)
             if (det.x1 - radius <= cx <= det.x2 + radius and
                     det.y1 - radius <= cy <= head_y2 + radius):
-                if det.confidence >= cfg.min_confidence and best_priority < 2:
+                if det.confidence >= cfg.confidence_threshold and best_priority < 2:
                     best = det; best_zone = "head"; best_priority = 2
                     continue
 
             # Check body zone (priority 1)
             if (det.x1 - radius <= cx <= det.x2 + radius and
                     head_y2 <= cy <= body_y2 + radius):
-                if det.confidence >= cfg.min_confidence * 0.9 and best_priority < 1:
+                if det.confidence >= cfg.confidence_threshold * 0.9 and best_priority < 1:
                     best = det; best_zone = "body"; best_priority = 1
 
         return best, best_zone

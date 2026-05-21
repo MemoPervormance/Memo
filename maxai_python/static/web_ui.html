@@ -6,183 +6,206 @@
 <title>CroixAI</title>
 <style>
 :root{
-  --bg:#08080e;--bg2:#0f0f1a;--bg3:#161624;--bg4:#1c1c2e;
-  --acc:#7c4dff;--acc2:#00e5ff;--gr:#00e676;--rd:#ff1744;--or:#ff9100;--pk:#e040fb;
-  --tx:#e8e8f0;--tx2:#9090b0;--tx3:#44445a;--brd:#1e1e30;
+  --bg:#07070f;--bg2:#0d0d1a;--bg3:#121220;--bg4:#1a1a2e;
+  --acc:#7c4dff;--acc2:#00e5ff;--gr:#00e676;--rd:#ff1744;
+  --or:#ff9100;--pk:#e040fb;--yw:#ffd740;
+  --tx:#e8e8f4;--tx2:#8888aa;--tx3:#3c3c58;--brd:#1a1a2c;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--tx);font:15px/1.5 'Segoe UI',system-ui,sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden}
-/* Header */
-header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;
-  background:linear-gradient(90deg,#0c0c18,#10101f);border-bottom:1px solid var(--brd);flex-shrink:0;gap:12px}
-.logo{font-size:22px;font-weight:900;letter-spacing:5px;
-  background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
-.hstats{display:flex;align-items:center;gap:16px;font-size:13px}
-.hstat{display:flex;align-items:center;gap:5px;color:var(--tx2)}
-.hstat b{color:var(--tx);font-size:15px}
-.hbadges{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.badge{padding:3px 10px;border-radius:4px;font-weight:700;font-size:11px;letter-spacing:.5px;white-space:nowrap}
-.b-gr{background:#00e67620;color:var(--gr);border:1px solid #00e67640}
-.b-rd{background:#ff174420;color:var(--rd);border:1px solid #ff174440}
-.b-or{background:#ff910020;color:var(--or);border:1px solid #ff914040}
-.b-bl{background:#00e5ff20;color:var(--acc2);border:1px solid #00e5ff40}
-.b-pu{background:#7c4dff20;color:var(--acc);border:1px solid #7c4dff40}
-.hbtns{display:flex;gap:8px}
-.hbtn{padding:7px 18px;border-radius:6px;border:none;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+/* ── HEADER ── */
+header{
+  display:flex;align-items:center;gap:14px;padding:8px 20px;flex-shrink:0;
+  background:linear-gradient(90deg,#0a0a18 0%,#0e0e20 100%);
+  border-bottom:1px solid var(--brd);
+}
+.logo{
+  font-size:20px;font-weight:900;letter-spacing:6px;white-space:nowrap;
+  background:linear-gradient(90deg,var(--acc),var(--acc2),var(--pk));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hstats{display:flex;align-items:center;gap:14px;font-size:12px}
+.hstat{display:flex;align-items:center;gap:4px;color:var(--tx2)}
+.hstat b{color:var(--tx);font-size:14px;min-width:24px;text-align:center}
+.hbadges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex:1}
+.badge{
+  padding:3px 9px;border-radius:4px;font-weight:700;font-size:11px;
+  letter-spacing:.5px;white-space:nowrap;cursor:default;
+}
+.b-gr{background:#00e67618;color:var(--gr);border:1px solid #00e67630}
+.b-rd{background:#ff174418;color:var(--rd);border:1px solid #ff174430}
+.b-or{background:#ff910018;color:var(--or);border:1px solid #ff914030}
+.b-bl{background:#00e5ff18;color:var(--acc2);border:1px solid #00e5ff30}
+.b-pu{background:#7c4dff18;color:var(--acc);border:1px solid #7c4dff30}
+.b-pk{background:#e040fb18;color:var(--pk);border:1px solid #e040fb30}
+.badge.glow{box-shadow:0 0 8px currentColor}
+.hbtns{display:flex;gap:8px;flex-shrink:0}
+.hbtn{padding:7px 20px;border-radius:6px;border:none;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s}
 .hbtn-start{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff}
-.hbtn-start:hover{opacity:.85;transform:translateY(-1px)}
-.hbtn-stop{background:#ff174420;color:var(--rd);border:1px solid #ff174440}
-.hbtn-stop:hover{background:#ff174440}
-/* Layout */
+.hbtn-start:hover{filter:brightness(1.2);transform:translateY(-1px)}
+.hbtn-stop{background:rgba(255,23,68,.15);color:var(--rd);border:1px solid rgba(255,23,68,.3)}
+.hbtn-stop:hover{background:rgba(255,23,68,.3)}
+/* ── LAYOUT ── */
 .main{display:flex;flex:1;overflow:hidden}
-/* Sidebar */
-nav{width:175px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--brd);overflow-y:auto;padding:8px 0}
-.nav-grp{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;padding:14px 14px 4px;font-weight:700}
-nav button{display:flex;align-items:center;gap:9px;width:calc(100% - 8px);margin-left:4px;background:none;border:none;
-  color:var(--tx2);text-align:left;padding:9px 14px;cursor:pointer;font-size:13px;
-  border-left:3px solid transparent;transition:all .12s;border-radius:0 7px 7px 0}
+/* ── SIDEBAR ── */
+nav{width:180px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--brd);overflow-y:auto;padding:6px 0}
+.nav-grp{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;padding:12px 14px 4px;font-weight:700}
+nav button{
+  display:flex;align-items:center;gap:9px;width:calc(100% - 8px);margin-left:4px;
+  background:none;border:none;color:var(--tx2);text-align:left;padding:8px 12px;
+  cursor:pointer;font-size:13px;border-left:3px solid transparent;
+  transition:all .1s;border-radius:0 7px 7px 0;
+}
 nav button:hover{background:var(--bg3);color:var(--tx)}
 nav button.active{color:var(--acc2);border-left-color:var(--acc2);background:rgba(0,229,255,.07);font-weight:600}
-nav button .ni{font-size:16px;width:20px;text-align:center}
-/* Content */
-.content{flex:1;overflow-y:auto;padding:22px}
+nav button .ni{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:20px 24px}
 .tab{display:none}.tab.active{display:block}
-h2{font-size:18px;font-weight:800;margin-bottom:18px;color:var(--tx);display:flex;align-items:center;gap:10px}
+h2{font-size:17px;font-weight:800;margin-bottom:16px;color:var(--tx);display:flex;align-items:center;gap:10px}
 h2::after{content:'';flex:1;height:1px;background:var(--brd)}
-h3{font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin:22px 0 10px}
-/* Grid */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-bottom:16px}
-.card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:18px}
-.card-title{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--tx);display:flex;align-items:center;gap:8px}
-/* Rows */
-.row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--brd);gap:12px}
+h3{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1.5px;margin:18px 0 8px}
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:14px}
+.grid-wide{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:12px;margin-bottom:14px}
+.card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:16px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:12px;color:var(--tx);display:flex;align-items:center;gap:8px}
+/* ── ROWS ── */
+.row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--brd);gap:10px}
 .row:last-child{border-bottom:none}
 .row label{color:var(--tx2);font-size:13px;flex:1;min-width:0;line-height:1.3}
 .row label small{display:block;color:var(--tx3);font-size:11px;margin-top:1px}
-/* Slider */
-input[type=range]{-webkit-appearance:none;width:150px;height:5px;background:var(--bg4);border-radius:3px;outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 6px rgba(124,77,255,.5)}
-.slider-wrap{display:flex;align-items:center;gap:8px}
-.slider-val{color:var(--acc2);font-size:12px;font-weight:700;min-width:38px;text-align:right}
-/* Select */
-select{background:var(--bg4);color:var(--tx);border:1px solid var(--brd);border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;outline:none}
+/* ── SLIDER ── */
+input[type=range]{-webkit-appearance:none;width:140px;height:4px;background:var(--bg4);border-radius:2px;outline:none;flex-shrink:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 6px rgba(124,77,255,.6)}
+.sw{display:flex;align-items:center;gap:7px}
+.sv{color:var(--acc2);font-size:12px;font-weight:700;min-width:34px;text-align:right}
+/* ── SELECT ── */
+select{background:var(--bg4);color:var(--tx);border:1px solid var(--brd);border-radius:6px;padding:5px 9px;font-size:13px;cursor:pointer;outline:none}
 select:focus{border-color:var(--acc)}
-/* Text input */
-input[type=text],input[type=number]{background:var(--bg4);color:var(--tx);border:1px solid var(--brd);
-  border-radius:6px;padding:6px 10px;font-size:13px;outline:none;width:130px}
+/* ── TEXT INPUT ── */
+input[type=text],input[type=number]{background:var(--bg4);color:var(--tx);border:1px solid var(--brd);border-radius:6px;padding:5px 9px;font-size:13px;outline:none;width:120px}
 input[type=text]:focus,input[type=number]:focus{border-color:var(--acc)}
-/* Toggle */
-.tog{position:relative;width:42px;height:24px;flex-shrink:0}
+/* ── TOGGLE ── */
+.tog{position:relative;width:40px;height:22px;flex-shrink:0}
 .tog input{opacity:0;width:0;height:0}
-.tog-sl{position:absolute;inset:0;background:var(--bg4);border-radius:12px;cursor:pointer;border:1px solid var(--brd);transition:.2s}
-.tog-sl:before{content:'';position:absolute;width:17px;height:17px;left:3px;top:3px;background:var(--tx3);border-radius:50%;transition:.2s}
+.tog-sl{position:absolute;inset:0;background:var(--bg4);border-radius:11px;cursor:pointer;border:1px solid var(--brd);transition:.2s}
+.tog-sl:before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:var(--tx3);border-radius:50%;transition:.2s}
 .tog input:checked+.tog-sl{background:var(--acc);border-color:var(--acc)}
 .tog input:checked+.tog-sl:before{transform:translateX(18px);background:#fff}
-/* Keybind */
-.keybind{background:var(--bg4);border:1px solid var(--brd);border-radius:7px;padding:6px 14px;
-  color:var(--acc2);font-size:12px;font-weight:700;cursor:pointer;min-width:76px;text-align:center;
-  text-transform:uppercase;letter-spacing:.5px;transition:all .15s;user-select:none;flex-shrink:0}
+/* ── KEYBIND ── */
+.keybind{
+  background:var(--bg4);border:1px solid var(--brd);border-radius:7px;
+  padding:5px 12px;color:var(--acc2);font-size:11px;font-weight:700;
+  cursor:pointer;min-width:70px;text-align:center;text-transform:uppercase;
+  letter-spacing:.5px;transition:all .15s;user-select:none;flex-shrink:0;
+}
 .keybind:hover{border-color:var(--acc);background:rgba(124,77,255,.15)}
 .keybind.listening{border-color:var(--acc2);background:rgba(0,229,255,.2);color:#fff;animation:pulse .8s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-/* Buttons */
-.btn{padding:8px 18px;border-radius:7px;border:none;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+/* ── BUTTONS ── */
+.btn{padding:7px 16px;border-radius:7px;border:none;cursor:pointer;font-weight:700;font-size:13px;transition:all .15s}
 .btn:hover{transform:translateY(-1px)}
 .btn-acc{background:linear-gradient(135deg,var(--acc),var(--pk));color:#fff}
-.btn-acc:hover{opacity:.85}
-.btn-sm{padding:6px 14px;font-size:12px;border-radius:6px}
+.btn-acc:hover{filter:brightness(1.15)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:6px}
 .btn-out{background:transparent;border:1px solid var(--brd);color:var(--tx2)}
 .btn-out:hover{border-color:var(--acc);color:var(--acc)}
-.btn-gr{background:#00e67625;color:var(--gr);border:1px solid #00e67640}
-.btn-gr:hover{background:#00e67640}
-.btn-rd{background:#ff174425;color:var(--rd);border:1px solid #ff174440}
-.btn-rd:hover{background:#ff174440}
-/* Preset cards */
-.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-bottom:20px}
-.preset-card{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:18px;cursor:pointer;transition:all .15s;text-align:center}
-.preset-card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 6px 24px rgba(124,77,255,.25)}
-.pc-icon{font-size:34px;margin-bottom:8px}
-.pc-name{font-weight:800;font-size:16px;margin-bottom:4px}
-.pc-model{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.5px;margin-bottom:8px}
-.pc-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:10px}
-.pc-tag{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700}
-/* Model cards */
-.model-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.model-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:16px;transition:border-color .15s}
-.model-card.on-disk{border-color:rgba(0,230,118,.35)}
-.mc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.mc-icon{font-size:26px}
-.mc-name{font-weight:800;font-size:14px}
+.btn-gr{background:rgba(0,230,118,.15);color:var(--gr);border:1px solid rgba(0,230,118,.3)}
+.btn-gr:hover{background:rgba(0,230,118,.28)}
+.btn-rd{background:rgba(255,23,68,.15);color:var(--rd);border:1px solid rgba(255,23,68,.3)}
+.btn-rd:hover{background:rgba(255,23,68,.28)}
+/* ── PRESET CARDS ── */
+.preset-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.preset-card{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:16px;cursor:default;transition:all .15s;text-align:center}
+.preset-card:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,77,255,.2)}
+.pc-icon{font-size:32px;margin-bottom:6px}
+.pc-name{font-weight:800;font-size:15px;margin-bottom:3px}
+.pc-model{font-size:11px;color:var(--acc);font-weight:700;letter-spacing:.5px;margin-bottom:7px}
+.pc-tags{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-bottom:10px}
+.pc-tag{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:700}
+.pc-desc{font-size:11px;color:var(--tx2);margin-bottom:12px;line-height:1.4}
+/* ── MODEL CARDS ── */
+.model-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.model-card{background:var(--bg2);border:1px solid var(--brd);border-radius:10px;padding:14px;transition:border-color .15s}
+.model-card.on-disk{border-color:rgba(0,230,118,.3)}
+.mc-head{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.mc-icon{font-size:24px}
+.mc-name{font-weight:800;font-size:13px}
 .mc-game{font-size:11px;color:var(--tx2);margin-top:1px}
-.mc-desc{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.45}
-.mc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.mc-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--tx2);border:1px solid var(--brd)}
+.mc-desc{font-size:11px;color:var(--tx2);margin-bottom:9px;line-height:1.4}
+.mc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.mc-tag{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--bg3);color:var(--tx2);border:1px solid var(--brd)}
 .mc-foot{display:flex;justify-content:space-between;align-items:center}
-.mc-ok{color:var(--gr);font-size:11px;font-weight:700}
-.mc-no{color:var(--tx3);font-size:11px}
-/* Driver cards */
-.drv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px;margin-bottom:16px}
-.drv{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:14px;border-left-width:4px}
-.drv.ok{border-left-color:var(--gr)}
-.drv.missing{border-left-color:var(--rd)}
-.drv.manual-type{border-left-color:var(--or)}
-.drv-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+/* ── DRIVER CARDS ── */
+.drv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:9px;margin-bottom:14px}
+.drv{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:13px;border-left-width:4px}
+.drv.ok{border-left-color:var(--gr)}.drv.missing{border-left-color:var(--rd)}.drv.manual-type{border-left-color:var(--or)}
+.drv-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px}
 .drv-lbl{font-weight:700;font-size:13px}
 .drv-ok{color:var(--gr);font-size:11px;font-weight:700;white-space:nowrap}
 .drv-no{color:var(--rd);font-size:11px;font-weight:700;white-space:nowrap}
 .drv-man{color:var(--or);font-size:11px;font-weight:700;white-space:nowrap}
-.drv-desc{font-size:12px;color:var(--tx2);margin-bottom:8px;line-height:1.4}
-.drv-note{font-size:11px;color:var(--or);margin-bottom:8px}
+.drv-desc{font-size:12px;color:var(--tx2);margin-bottom:7px;line-height:1.4}
+.drv-note{font-size:11px;color:var(--or);margin-bottom:7px}
 .drv-prog{font-size:11px;color:var(--acc2);margin-top:4px;min-height:14px}
-/* Big stats */
-.big-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.stat-box{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:16px;text-align:center}
-.stat-val{font-size:30px;font-weight:900;color:var(--acc2);line-height:1}
-.stat-lbl{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:5px}
-/* Path row */
-.path-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
-.path-inp{flex:1;background:var(--bg4);border:1px solid var(--brd);border-radius:6px;
-  padding:7px 12px;color:var(--tx);font-size:13px;outline:none;font-family:monospace}
+/* ── BIG STATS ── */
+.big-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:18px}
+.stat-box{background:var(--bg2);border:1px solid var(--brd);border-radius:9px;padding:14px;text-align:center}
+.stat-val{font-size:28px;font-weight:900;color:var(--acc2);line-height:1}
+.stat-lbl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-top:5px}
+/* ── PATH ROW ── */
+.path-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.path-inp{flex:1;background:var(--bg4);border:1px solid var(--brd);border-radius:6px;padding:6px 11px;color:var(--tx);font-size:13px;outline:none;font-family:monospace}
 .path-inp:focus{border-color:var(--acc)}
-.path-inp.ok{border-color:var(--gr)}
-.path-inp.err{border-color:var(--rd)}
-/* Color input */
-input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1px solid var(--brd);background:var(--bg4);cursor:pointer}
-/* Toast */
-#toast{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast-item{padding:11px 16px;border-radius:8px;font-size:13px;font-weight:600;max-width:320px;animation:slideIn .2s ease}
-.toast-ok{background:#00e67628;border:1px solid var(--gr);color:var(--gr)}
-.toast-err{background:#ff174428;border:1px solid var(--rd);color:var(--rd)}
-.toast-info{background:#7c4dff28;border:1px solid var(--acc);color:var(--acc2)}
+.path-inp.ok{border-color:var(--gr)}.path-inp.err{border-color:var(--rd)}
+/* ── COLOR INPUT ── */
+input[type=color]{width:34px;height:28px;padding:2px;border-radius:5px;border:1px solid var(--brd);background:var(--bg4);cursor:pointer}
+/* ── TOAST ── */
+#toast{position:fixed;bottom:18px;right:18px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast-item{padding:10px 15px;border-radius:8px;font-size:13px;font-weight:600;max-width:300px;animation:slideIn .2s ease}
+.toast-ok{background:rgba(0,230,118,.15);border:1px solid var(--gr);color:var(--gr)}
+.toast-err{background:rgba(255,23,68,.15);border:1px solid var(--rd);color:var(--rd)}
+.toast-info{background:rgba(124,77,255,.15);border:1px solid var(--acc);color:var(--acc2)}
 @keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
-.sep{height:1px;background:var(--brd);margin:14px 0}
+.sep{height:1px;background:var(--brd);margin:12px 0}
+/* ── INPUT BACKEND CARDS ── */
+.ib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px;margin-bottom:14px}
+.ib-card{background:var(--bg2);border:2px solid var(--brd);border-radius:9px;padding:12px 14px;cursor:pointer;transition:all .12s}
+.ib-card:hover{border-color:var(--acc)}
+.ib-card.active-ib{border-color:var(--acc2);background:rgba(0,229,255,.06)}
+.ib-name{font-weight:700;font-size:13px;margin-bottom:3px}
+.ib-desc{font-size:11px;color:var(--tx2);line-height:1.35}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+code{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:1px 5px;font-size:11px;color:var(--acc2)}
+.section-note{font-size:12px;color:var(--tx2);margin-bottom:14px;line-height:1.5}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ══ HEADER ══ -->
 <header>
   <span class="logo">CROIXAI</span>
   <div class="hstats">
-    <div class="hstat"><span>FPS</span><b id="h-fps">0</b></div>
-    <div class="hstat"><span>Targets</span><b id="h-tgt">0</b></div>
-    <div class="hstat"><span>Mode</span><b id="h-mode" style="color:var(--acc)">—</b></div>
+    <div class="hstat">FPS <b id="h-fps">0</b></div>
+    <div class="hstat">Targets <b id="h-tgt">0</b></div>
+    <div class="hstat">Mode <b id="h-mode" style="color:var(--acc);font-size:12px">—</b></div>
   </div>
   <div class="hbadges">
     <span id="h-loop" class="badge b-rd">STOPPED</span>
-    <span id="h-aim"  class="badge b-pu" style="display:none">AIM ACTIVE</span>
+    <span id="h-aim"  class="badge b-pu" style="display:none">AIM ON</span>
     <span id="h-prov" class="badge b-bl">—</span>
     <span id="h-prof" class="badge b-or">default</span>
+    <span id="h-mf"   class="badge b-rd">NO MODEL</span>
   </div>
   <div class="hbtns">
-    <button class="hbtn hbtn-start" onclick="startLoop()">▶ Start</button>
-    <button class="hbtn hbtn-stop"  onclick="stopLoop()">■ Stop</button>
+    <button class="hbtn hbtn-start" onclick="startLoop()">▶ START</button>
+    <button class="hbtn hbtn-stop"  onclick="stopLoop()">■ STOP</button>
   </div>
 </header>
 
 <div class="main">
-<!-- SIDEBAR -->
+<!-- ══ SIDEBAR ══ -->
 <nav>
   <div class="nav-grp">Overview</div>
   <button class="active" onclick="show('status')"><span class="ni">📊</span>Status</button>
@@ -191,12 +214,16 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
   <button onclick="show('aimbot')"><span class="ni">🎯</span>Aimbot</button>
   <button onclick="show('triggerbot')"><span class="ni">🔫</span>Triggerbot</button>
   <button onclick="show('overlay')"><span class="ni">👁</span>ESP / Overlay</button>
-  <div class="nav-grp">AI</div>
-  <button onclick="show('models')"><span class="ni">🤖</span>Models</button>
-  <div class="nav-grp">System</div>
+  <div class="nav-grp">AI & Capture</div>
+  <button onclick="show('models')"><span class="ni">🤖</span>AI Models</button>
+  <button onclick="show('capture')"><span class="ni">📹</span>Capture</button>
+  <div class="nav-grp">Hardware</div>
+  <button onclick="show('input')"><span class="ni">🖱</span>Input</button>
   <button onclick="show('hotkeys')"><span class="ni">⌨️</span>Hotkeys</button>
+  <div class="nav-grp">System</div>
   <button onclick="show('setup')"><span class="ni">🔧</span>Drivers</button>
-  <button onclick="show('profiles')"><span class="ni">👤</span>Profile</button>
+  <button onclick="show('profiles')"><span class="ni">👤</span>Profiles</button>
+  <button onclick="show('info')"><span class="ni">ℹ️</span>Info</button>
 </nav>
 
 <div class="content">
@@ -207,17 +234,18 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
   <div class="big-stats">
     <div class="stat-box"><div class="stat-val" id="s-fps">0</div><div class="stat-lbl">FPS</div></div>
     <div class="stat-box"><div class="stat-val" id="s-tgt">0</div><div class="stat-lbl">Targets</div></div>
-    <div class="stat-box"><div class="stat-val" id="s-mode" style="font-size:15px">—</div><div class="stat-lbl">Aim Mode</div></div>
-    <div class="stat-box"><div class="stat-val" id="s-prov" style="font-size:13px">—</div><div class="stat-lbl">Provider</div></div>
-    <div class="stat-box"><div class="stat-val" id="s-input" style="font-size:12px">—</div><div class="stat-lbl">Input</div></div>
-    <div class="stat-box"><div class="stat-val" id="s-cap" style="font-size:12px">—</div><div class="stat-lbl">Capture</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-mode" style="font-size:14px">—</div><div class="stat-lbl">Aim Mode</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-prov" style="font-size:12px">—</div><div class="stat-lbl">Provider</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-input" style="font-size:11px">—</div><div class="stat-lbl">Input</div></div>
+    <div class="stat-box"><div class="stat-val" id="s-cap" style="font-size:11px">—</div><div class="stat-lbl">Capture</div></div>
   </div>
   <div class="grid">
     <div class="card">
       <div class="card-title">🔄 Loop Control</div>
-      <div class="row"><label>Status</label><span id="sc-status" class="badge b-rd">STOPPED</span></div>
-      <div class="row"><label>Aim Active</label><span id="sc-aim-y" class="badge b-pu" style="display:none">ACTIVE</span><span id="sc-aim-n" class="badge b-rd" style="display:none">INACTIVE</span></div>
-      <div class="row"><label>Paused</label><span id="sc-pause-y" class="badge b-or" style="display:none">PAUSED</span><span id="sc-pause-n" style="color:var(--tx3);font-size:12px">Nein</span></div>
+      <div class="row"><label>Loop Status</label><span id="sc-status" class="badge b-rd">STOPPED</span></div>
+      <div class="row"><label>Aim Aktiv</label><span id="sc-aim" class="badge b-rd">INAKTIV</span></div>
+      <div class="row"><label>Pausiert</label><span id="sc-pause" class="badge b-or" style="display:none">PAUSED</span><span id="sc-nopause" style="color:var(--tx3);font-size:12px">Nein</span></div>
+      <div class="row"><label>Aktives Profil</label><span id="sc-prof" class="badge b-or">default</span></div>
       <div class="sep"></div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-acc" style="flex:1" onclick="startLoop()">▶ Start</button>
@@ -226,15 +254,16 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
     </div>
     <div class="card">
       <div class="card-title">💾 Info</div>
-      <div class="row"><label>Aktives Profil</label><span id="sc-prof" class="badge b-or">default</span></div>
       <div class="row"><label>Model Status</label><span id="sc-mf" class="badge b-rd">NOT FOUND</span></div>
+      <div class="row"><label>Model Pfad</label><span id="sc-mp" style="font-size:11px;color:var(--tx3);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px">—</span></div>
+      <div class="row"><label>Tunnel URL</label><span id="sc-tun" style="font-size:11px;color:var(--tx3)">—</span></div>
       <div class="sep"></div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-out btn-sm" style="flex:1" onclick="saveConfig()">💾 Speichern</button>
         <button class="btn btn-rd btn-sm" style="flex:1" onclick="killApp()">⏻ Beenden</button>
       </div>
     </div>
-    <div class="card" id="sc-errc" style="display:none;border-color:var(--rd)20">
+    <div class="card" id="sc-errc" style="display:none;border-color:rgba(255,23,68,.2)">
       <div class="card-title" style="color:var(--rd)">⚠ Fehler</div>
       <div id="sc-err" style="font-size:12px;color:var(--rd);line-height:1.5"></div>
     </div>
@@ -244,7 +273,7 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
 <!-- ══ GAME PRESETS ══ -->
 <div id="tab-presets" class="tab">
   <h2>🎮 Game Presets</h2>
-  <p style="color:var(--tx2);font-size:13px;margin-bottom:18px">Ein Klick konfiguriert alles: FOV, Speed, Recoil, Backend, Model.</p>
+  <p class="section-note">Ein Klick richtet alles ein: FOV, Speed, Recoil, Backend, Model. Profil wird automatisch gespeichert.</p>
   <div class="preset-grid" id="preset-grid"><div style="color:var(--tx3)">Lädt…</div></div>
 </div>
 
@@ -255,62 +284,46 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
     <div class="card">
       <div class="card-title">⚙️ Grundeinstellungen</div>
       <div class="row"><label>Aktiviert</label><label class="tog"><input type="checkbox" id="a-en" onchange="sc('aim.enabled',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Auto Aim<small>Immer aktiv ohne Key</small></label><label class="tog"><input type="checkbox" id="a-aa" onchange="sc('aim.auto_aim',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Position</label><select id="a-pos" onchange="sc('aim.position',this.value)"><option value="head">Kopf</option><option value="body">Körper</option></select></div>
+      <div class="row"><label>Auto Aim<small>Immer aktiv, kein Key nötig</small></label><label class="tog"><input type="checkbox" id="a-aa" onchange="sc('aim.auto_aim',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Position</label><select id="a-pos" onchange="sc('aim.position',this.value)"><option value="head">Kopf (Head)</option><option value="body">Körper (Body)</option></select></div>
     </div>
     <div class="card">
-      <div class="card-title">📐 FOV & Speed</div>
-      <div class="row"><label>FOV X</label><div class="slider-wrap"><input type="range" min="10" max="180" step="1" id="a-fx" oninput="slv('a-fx-v',this.value);sc('aim.fov_x',+this.value)"><span class="slider-val" id="a-fx-v">60</span></div></div>
-      <div class="row"><label>FOV Y</label><div class="slider-wrap"><input type="range" min="10" max="180" step="1" id="a-fy" oninput="slv('a-fy-v',this.value);sc('aim.fov_y',+this.value)"><span class="slider-val" id="a-fy-v">60</span></div></div>
-      <div class="row"><label>Speed</label><div class="slider-wrap"><input type="range" min="0.1" max="3.0" step="0.05" id="a-spd" oninput="slv('a-spd-v',this.value);sc('aim.speed',+this.value)"><span class="slider-val" id="a-spd-v">1.2</span></div></div>
-      <div class="row"><label>Scope Multiplier</label><div class="slider-wrap"><input type="range" min="0.1" max="2.0" step="0.05" id="a-sc" oninput="slv('a-sc-v',this.value);sc('aim.scope_multiplier',+this.value)"><span class="slider-val" id="a-sc-v">1.0</span></div></div>
+      <div class="card-title">📐 FOV &amp; Geschwindigkeit</div>
+      <div class="row"><label>FOV X (px)</label><div class="sw"><input type="range" min="10" max="200" step="1" id="a-fx" oninput="slv('a-fx-v',this.value);sc('aim.fov_x',+this.value)"><span class="sv" id="a-fx-v">60</span></div></div>
+      <div class="row"><label>FOV Y (px)</label><div class="sw"><input type="range" min="10" max="200" step="1" id="a-fy" oninput="slv('a-fy-v',this.value);sc('aim.fov_y',+this.value)"><span class="sv" id="a-fy-v">60</span></div></div>
+      <div class="row"><label>Speed</label><div class="sw"><input type="range" min="0.1" max="5.0" step="0.05" id="a-spd" oninput="slv('a-spd-v',this.value);sc('aim.speed',+this.value)"><span class="sv" id="a-spd-v">1.2</span></div></div>
+      <div class="row"><label>Smoothness<small>1=direkt 5=sehr smooth</small></label><div class="sw"><input type="range" min="1.0" max="5.0" step="0.1" id="a-sm" oninput="slv('a-sm-v',this.value);sc('aim.smoothness',+this.value)"><span class="sv" id="a-sm-v">1.0</span></div></div>
+      <div class="row"><label>Scope Multiplikator</label><div class="sw"><input type="range" min="0.1" max="2.0" step="0.05" id="a-sc" oninput="slv('a-sc-v',this.value);sc('aim.scope_multiplier',+this.value)"><span class="sv" id="a-sc-v">1.0</span></div></div>
     </div>
     <div class="card">
-      <div class="card-title">🎯 Radius</div>
-      <div class="row"><label>Snap Radius<small>Präzisions-Zone px</small></label><div class="slider-wrap"><input type="range" min="1" max="80" step="1" id="a-sn" oninput="slv('a-sn-v',this.value);sc('aim.snap_radius',+this.value)"><span class="slider-val" id="a-sn-v">20</span></div></div>
-      <div class="row"><label>Near Radius<small>Track-Zone px</small></label><div class="slider-wrap"><input type="range" min="10" max="250" step="1" id="a-nr" oninput="slv('a-nr-v',this.value);sc('aim.near_radius',+this.value)"><span class="slider-val" id="a-nr-v">80</span></div></div>
-      <div class="row"><label>Smoothness</label><div class="slider-wrap"><input type="range" min="0" max="1" step="0.05" id="a-sm" oninput="slv('a-sm-v',this.value);sc('aim.smoothness',+this.value)"><span class="slider-val" id="a-sm-v">0.0</span></div></div>
+      <div class="card-title">🎯 Snap &amp; Near Radius</div>
+      <div class="row"><label>Snap Radius<small>Präzisions-Zone in px</small></label><div class="sw"><input type="range" min="1" max="100" step="1" id="a-sn" oninput="slv('a-sn-v',this.value);sc('aim.snap_radius',+this.value)"><span class="sv" id="a-sn-v">20</span></div></div>
+      <div class="row"><label>Near Radius<small>Track-Zone in px</small></label><div class="sw"><input type="range" min="10" max="300" step="1" id="a-nr" oninput="slv('a-nr-v',this.value);sc('aim.near_radius',+this.value)"><span class="sv" id="a-nr-v">80</span></div></div>
     </div>
     <div class="card">
-      <div class="card-title">🔄 Recoil</div>
+      <div class="card-title">🔄 Recoil Compensation</div>
       <div class="row"><label>Aktiviert</label><label class="tog"><input type="checkbox" id="r-en" onchange="sc('aim.recoil.enabled',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Stärke</label><div class="slider-wrap"><input type="range" min="0.1" max="10" step="0.1" id="r-st" oninput="slv('r-st-v',this.value);sc('aim.recoil.strength',+this.value)"><span class="slider-val" id="r-st-v">2.0</span></div></div>
-      <div class="row"><label>Smoothness</label><div class="slider-wrap"><input type="range" min="0.1" max="1" step="0.05" id="r-sm" oninput="slv('r-sm-v',this.value);sc('aim.recoil.smoothness',+this.value)"><span class="slider-val" id="r-sm-v">0.5</span></div></div>
+      <div class="row"><label>Stärke</label><div class="sw"><input type="range" min="0.1" max="10" step="0.1" id="r-st" oninput="slv('r-st-v',this.value);sc('aim.recoil.strength',+this.value)"><span class="sv" id="r-st-v">2.0</span></div></div>
+      <div class="row"><label>Smoothness</label><div class="sw"><input type="range" min="0.1" max="5.0" step="0.1" id="r-sm" oninput="slv('r-sm-v',this.value);sc('aim.recoil.smoothness',+this.value)"><span class="sv" id="r-sm-v">2.0</span></div></div>
     </div>
     <div class="card">
       <div class="card-title">🌬 Wind Mouse</div>
-      <div class="row"><label>Aktiviert</label><label class="tog"><input type="checkbox" id="wm-en" onchange="sc('aim.wind_mouse.enabled',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Gravity</label><div class="slider-wrap"><input type="range" min="1" max="20" step="0.5" id="wm-g" oninput="slv('wm-g-v',this.value);sc('aim.wind_mouse.gravity',+this.value)"><span class="slider-val" id="wm-g-v">9.0</span></div></div>
-      <div class="row"><label>Wind</label><div class="slider-wrap"><input type="range" min="0" max="10" step="0.5" id="wm-w" oninput="slv('wm-w-v',this.value);sc('aim.wind_mouse.wind',+this.value)"><span class="slider-val" id="wm-w-v">3.5</span></div></div>
-      <div class="row"><label>Max Step</label><div class="slider-wrap"><input type="range" min="2" max="30" step="0.5" id="wm-ms" oninput="slv('wm-ms-v',this.value);sc('aim.wind_mouse.max_step',+this.value)"><span class="slider-val" id="wm-ms-v">7.0</span></div></div>
+      <div class="row"><label>Aktiviert<small>Humanisierte Mausbewegung</small></label><label class="tog"><input type="checkbox" id="wm-en" onchange="sc('aim.wind_mouse.enabled',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Gravity</label><div class="sw"><input type="range" min="1" max="20" step="0.5" id="wm-g" oninput="slv('wm-g-v',this.value);sc('aim.wind_mouse.gravity',+this.value)"><span class="sv" id="wm-g-v">9.0</span></div></div>
+      <div class="row"><label>Wind</label><div class="sw"><input type="range" min="0" max="10" step="0.5" id="wm-w" oninput="slv('wm-w-v',this.value);sc('aim.wind_mouse.wind',+this.value)"><span class="sv" id="wm-w-v">3.5</span></div></div>
+      <div class="row"><label>Max Step</label><div class="sw"><input type="range" min="2" max="30" step="0.5" id="wm-ms" oninput="slv('wm-ms-v',this.value);sc('aim.wind_mouse.max_step',+this.value)"><span class="sv" id="wm-ms-v">7.0</span></div></div>
     </div>
     <div class="card">
       <div class="card-title">🔮 Prediction</div>
       <div class="row"><label>Aktiviert</label><label class="tog"><input type="checkbox" id="pr-en" onchange="sc('aim.prediction.enabled',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Interval (s)</label><div class="slider-wrap"><input type="range" min="0" max="0.5" step="0.01" id="pr-i" oninput="slv('pr-i-v',this.value);sc('aim.prediction.interval',+this.value)"><span class="slider-val" id="pr-i-v">0.05</span></div></div>
-      <div class="row"><label>Future Dots</label><div class="slider-wrap"><input type="range" min="1" max="40" step="1" id="pr-fp" oninput="slv('pr-fp-v',this.value);sc('aim.prediction.future_positions',+this.value)"><span class="slider-val" id="pr-fp-v">5</span></div></div>
-    </div>
-  </div>
-  <h3>🤖 AI Detection</h3>
-  <div class="grid">
-    <div class="card">
-      <div class="card-title">Model</div>
-      <div class="path-row">
-        <input type="text" class="path-inp" id="det-path" placeholder="model.onnx" onchange="sc('detection.model_path',this.value)">
-        <button class="btn btn-out btn-sm" onclick="document.getElementById('det-fi').click()">📂</button>
-        <input type="file" id="det-fi" accept=".onnx,.engine" style="display:none" onchange="pickModel(this,'det-path')">
-      </div>
-      <div class="row"><label>Confidence</label><div class="slider-wrap"><input type="range" min="0.1" max="0.99" step="0.01" id="det-c" oninput="slv('det-c-v',this.value);sc('detection.confidence_threshold',+this.value)"><span class="slider-val" id="det-c-v">0.50</span></div></div>
-      <div class="row"><label>Blob Size</label><select id="det-b" onchange="sc('detection.blob_size',+this.value)"><option value="160">160</option><option value="320" selected>320</option><option value="640">640</option></select></div>
-      <div class="row"><label>DirectML / CUDA</label><label class="tog"><input type="checkbox" id="det-cu" onchange="sc('detection.use_cuda',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>TensorRT (.engine)</label><label class="tog"><input type="checkbox" id="det-tr" onchange="sc('detection.use_tensorrt',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Interval (s)</label><div class="sw"><input type="range" min="0" max="0.5" step="0.01" id="pr-i" oninput="slv('pr-i-v',this.value);sc('aim.prediction.interval',+this.value)"><span class="sv" id="pr-i-v">0.05</span></div></div>
+      <div class="row"><label>Future Dots</label><div class="sw"><input type="range" min="1" max="40" step="1" id="pr-fp" oninput="slv('pr-fp-v',this.value);sc('aim.prediction.future_positions',+this.value)"><span class="sv" id="pr-fp-v">5</span></div></div>
     </div>
     <div class="card">
-      <div class="card-title">📹 Capture</div>
-      <div class="row"><label>Backend</label><select id="cap-bk" onchange="sc('capture.backend',this.value)"><option value="dxgi">DXGI (Empfohlen)</option><option value="winrt">WinRT (HDR)</option><option value="capture_card">Capture Card</option><option value="udp">UDP (2-PC)</option><option value="ndi">NDI</option></select></div>
-      <div class="row"><label>Capture Size</label><select id="cap-sz" onchange="sc('capture.capture_size',+this.value)"><option value="160">160</option><option value="320" selected>320</option><option value="640">640</option></select></div>
-      <div class="row"><label>Monitor</label><input type="number" id="cap-m" min="0" max="4" value="0" onchange="sc('capture.monitor_index',+this.value)" style="width:70px"></div>
-      <div class="row"><label>Kreis-Maske</label><label class="tog"><input type="checkbox" id="cap-ci" onchange="sc('capture.circle_mask',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="card-title">🔒 Sticky Target</div>
+      <div class="row"><label>Aktiviert<small>Ziel festhalten bei Verlust</small></label><label class="tog"><input type="checkbox" id="st-en" onchange="sc('aim.sticky_target.enabled',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Hold Duration (s)<small>Wechsel erst nach X sek</small></label><div class="sw"><input type="range" min="0.1" max="5.0" step="0.1" id="st-hd" oninput="slv('st-hd-v',this.value);sc('aim.sticky_target.hold_duration',+this.value)"><span class="sv" id="st-hd-v">1.5</span></div></div>
+      <div class="row"><label>Static Filter<small>Stillstehende Ziele ignorieren</small></label><label class="tog"><input type="checkbox" id="st-sf" onchange="sc('aim.sticky_target.static_filter',this.checked)"><span class="tog-sl"></span></label></div>
     </div>
   </div>
 </div>
@@ -322,16 +335,16 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
     <div class="card">
       <div class="card-title">⚙️ Einstellungen</div>
       <div class="row"><label>Aktiviert</label><label class="tog"><input type="checkbox" id="tb-en" onchange="sc('triggerbot.enabled',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Auto Shoot<small>Ohne Key halten</small></label><label class="tog"><input type="checkbox" id="tb-au" onchange="sc('aim.auto_shoot',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Confidence</label><div class="slider-wrap"><input type="range" min="0.1" max="0.99" step="0.01" id="tb-c" oninput="slv('tb-c-v',this.value);sc('triggerbot.confidence_threshold',+this.value)"><span class="slider-val" id="tb-c-v">0.60</span></div></div>
-      <div class="row"><label>Crosshair Radius px</label><div class="slider-wrap"><input type="range" min="1" max="60" step="1" id="tb-r" oninput="slv('tb-r-v',this.value);sc('triggerbot.crosshair_radius',+this.value)"><span class="slider-val" id="tb-r-v">8</span></div></div>
+      <div class="row"><label>Auto Shoot<small>Kein Key nötig</small></label><label class="tog"><input type="checkbox" id="tb-au" onchange="sc('aim.auto_shoot',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Confidence</label><div class="sw"><input type="range" min="0.1" max="0.99" step="0.01" id="tb-c" oninput="slv('tb-c-v',this.value);sc('triggerbot.confidence_threshold',+this.value)"><span class="sv" id="tb-c-v">0.65</span></div></div>
+      <div class="row"><label>Crosshair Radius px</label><div class="sw"><input type="range" min="1" max="80" step="1" id="tb-r" oninput="slv('tb-r-v',this.value);sc('triggerbot.crosshair_radius',+this.value)"><span class="sv" id="tb-r-v">8</span></div></div>
     </div>
     <div class="card">
       <div class="card-title">⏱ Timing</div>
-      <div class="row"><label>Fire Delay ms</label><div class="slider-wrap"><input type="range" min="0" max="300" step="5" id="tb-d" oninput="slv('tb-d-v',this.value);sc('triggerbot.fire_delay_ms',+this.value)"><span class="slider-val" id="tb-d-v">50</span></div></div>
-      <div class="row"><label>Burst Frames</label><div class="slider-wrap"><input type="range" min="1" max="20" step="1" id="tb-bu" oninput="slv('tb-bu-v',this.value);sc('triggerbot.burst_frames',+this.value)"><span class="slider-val" id="tb-bu-v">3</span></div></div>
-      <div class="row"><label>Cooldown ms</label><div class="slider-wrap"><input type="range" min="50" max="1000" step="10" id="tb-co" oninput="slv('tb-co-v',this.value);sc('triggerbot.cooldown_ms',+this.value)"><span class="slider-val" id="tb-co-v">250</span></div></div>
-      <div class="row"><label>Color Check<small>HSV Pixel-Bestätigung</small></label><label class="tog"><input type="checkbox" id="tb-cc" onchange="sc('triggerbot.color_check',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Fire Delay ms<small>Verzögerung vor Schuss</small></label><div class="sw"><input type="range" min="0" max="300" step="5" id="tb-d" oninput="slv('tb-d-v',this.value);sc('triggerbot.fire_delay_ms',+this.value)"><span class="sv" id="tb-d-v">30</span></div></div>
+      <div class="row"><label>Burst Frames<small>Wie viele Frames feuern</small></label><div class="sw"><input type="range" min="1" max="20" step="1" id="tb-bu" oninput="slv('tb-bu-v',this.value);sc('triggerbot.burst_frames',+this.value)"><span class="sv" id="tb-bu-v">3</span></div></div>
+      <div class="row"><label>Cooldown ms</label><div class="sw"><input type="range" min="50" max="1000" step="10" id="tb-co" oninput="slv('tb-co-v',this.value);sc('triggerbot.cooldown_ms',+this.value)"><span class="sv" id="tb-co-v">120</span></div></div>
+      <div class="row"><label>Color Check<small>Pixel-Bestätigung</small></label><label class="tog"><input type="checkbox" id="tb-cc" onchange="sc('triggerbot.color_check',this.checked)"><span class="tog-sl"></span></label></div>
     </div>
   </div>
 </div>
@@ -341,38 +354,42 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
   <h2>👁 ESP / Overlay</h2>
   <div class="grid">
     <div class="card">
-      <div class="card-title">🖥 Overlay</div>
+      <div class="card-title">🖥 Overlay Einstellungen</div>
       <div class="row"><label>Aktiviert</label><label class="tog"><input type="checkbox" id="ov-en" onchange="sc('overlay.enabled',this.checked)"><span class="tog-sl"></span></label></div>
       <div class="row"><label>Detection Boxes</label><label class="tog"><input type="checkbox" id="ov-bx" onchange="sc('overlay.detection_boxes',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Box Farbe</label><input type="color" id="ov-bc" value="#00e676" oninput="sc('overlay.box_color',this.value)"></div>
-      <div class="row"><label>Box Dicke</label><div class="slider-wrap"><input type="range" min="1" max="5" step="1" id="ov-th" oninput="slv('ov-th-v',this.value);sc('overlay.box_thickness',+this.value)"><span class="slider-val" id="ov-th-v">2</span></div></div>
+      <div class="row"><label>Box Farbe</label><input type="color" id="ov-bc" value="#FF0000" oninput="sc('overlay.box_color',this.value)"></div>
+      <div class="row"><label>Box Dicke px</label><div class="sw"><input type="range" min="1" max="5" step="1" id="ov-th" oninput="slv('ov-th-v',this.value);sc('overlay.box_thickness',+this.value)"><span class="sv" id="ov-th-v">2</span></div></div>
+      <div class="sep"></div>
       <div class="row"><label>Future Dots</label><label class="tog"><input type="checkbox" id="ov-fd" onchange="sc('overlay.future_dots',this.checked)"><span class="tog-sl"></span></label></div>
-      <div class="row"><label>Dot Farbe</label><input type="color" id="ov-dc" value="#e040fb" oninput="sc('overlay.dot_color',this.value)"></div>
+      <div class="row"><label>Dot Farbe</label><input type="color" id="ov-dc" value="#e040fb" oninput="sc('overlay.future_dot_color',this.value)"></div>
+      <div class="sep"></div>
       <div class="row"><label>Capture Border</label><label class="tog"><input type="checkbox" id="ov-cb" onchange="sc('overlay.capture_border',this.checked)"><span class="tog-sl"></span></label></div>
       <div class="row"><label>Target Icons</label><label class="tog"><input type="checkbox" id="ov-ti" onchange="sc('overlay.target_icons',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Deckkraft</label><div class="sw"><input type="range" min="0.1" max="1.0" step="0.05" id="ov-op" oninput="slv('ov-op-v',this.value);sc('overlay.opacity',+this.value)"><span class="sv" id="ov-op-v">0.8</span></div></div>
     </div>
   </div>
+  <p style="font-size:12px;color:var(--tx3);margin-top:6px">
+    Overlay-Toggle Hotkey: <code>Insert</code> — sichtbar wenn Loop läuft.
+  </p>
 </div>
 
-<!-- ══ MODELS ══ -->
+<!-- ══ AI MODELS ══ -->
 <div id="tab-models" class="tab">
   <h2>🤖 AI Models</h2>
 
-  <!-- Scanned files in models/ folder -->
-  <div class="card" style="margin-bottom:16px">
+  <div class="card" style="margin-bottom:14px">
     <div class="card-title" style="justify-content:space-between">
-      <span>📁 Gefundene Models in models\</span>
+      <span>📁 Models in models\ Ordner</span>
       <button class="btn btn-out btn-sm" onclick="scanModels()">🔄 Scannen</button>
     </div>
     <div id="scan-list"><div style="color:var(--tx3);font-size:13px">Klicke Scannen…</div></div>
     <div style="font-size:11px;color:var(--tx3);margin-top:8px">
-      Lege .onnx oder .engine Dateien in den <code style="color:var(--acc2)">models\</code> Ordner → Scannen → Laden
+      Lege <code>.onnx</code> oder <code>.engine</code> Dateien in den <code>models\</code> Ordner → Scannen → Laden
     </div>
   </div>
 
-  <!-- Manual path -->
-  <div class="card" style="margin-bottom:20px">
-    <div class="card-title">✏️ Pfad manuell eingeben</div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">✏️ Pfad manuell</div>
     <div class="path-row">
       <input type="text" class="path-inp" id="m-path" placeholder="models\model.onnx">
       <button class="btn btn-acc btn-sm" onclick="applyModelPath()">✓ Setzen</button>
@@ -380,35 +397,144 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
     <div id="m-status" style="font-size:12px;color:var(--tx3);margin-top:2px"></div>
   </div>
 
-  <h3>Model-Konfigurationen (Referenz)</h3>
+  <div class="grid" style="margin-bottom:14px">
+    <div class="card">
+      <div class="card-title">⚙️ Detection</div>
+      <div class="row"><label>Confidence</label><div class="sw"><input type="range" min="0.1" max="0.99" step="0.01" id="det-c" oninput="slv('det-c-v',this.value);sc('detection.confidence_threshold',+this.value)"><span class="sv" id="det-c-v">0.50</span></div></div>
+      <div class="row"><label>Blob Size</label><select id="det-b" onchange="sc('detection.blob_size',+this.value)"><option value="160">160 px (schnell)</option><option value="320" selected>320 px (standard)</option><option value="640">640 px (präzise)</option></select></div>
+      <div class="row"><label>NMS Threshold</label><div class="sw"><input type="range" min="0.1" max="0.9" step="0.05" id="det-n" oninput="slv('det-n-v',this.value);sc('detection.nms_threshold',+this.value)"><span class="sv" id="det-n-v">0.45</span></div></div>
+      <div class="row"><label>Max Detections</label><input type="number" id="det-md" min="1" max="50" value="10" onchange="sc('detection.max_detections',+this.value)" style="width:70px"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🖥 Provider</div>
+      <div class="row"><label>DirectML / CUDA</label><label class="tog"><input type="checkbox" id="det-cu" onchange="sc('detection.use_cuda',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>TensorRT (.engine)</label><label class="tog"><input type="checkbox" id="det-tr" onchange="sc('detection.use_tensorrt',this.checked)"><span class="tog-sl"></span></label></div>
+    </div>
+  </div>
+
+  <h3>Model-Referenzen</h3>
   <div class="model-grid" id="model-grid"><div style="color:var(--tx3)">Lädt…</div></div>
+</div>
+
+<!-- ══ CAPTURE ══ -->
+<div id="tab-capture" class="tab">
+  <h2>📹 Capture</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">⚙️ Einstellungen</div>
+      <div class="row"><label>Backend</label><select id="cap-bk" onchange="sc('capture.backend',this.value)">
+        <option value="dxgi">DXGI (Empfohlen)</option>
+        <option value="winrt">WinRT (HDR)</option>
+        <option value="capture_card">Capture Card</option>
+        <option value="udp">UDP (2-PC)</option>
+        <option value="ndi">NDI</option>
+      </select></div>
+      <div class="row"><label>Capture Größe</label><select id="cap-sz" onchange="sc('capture.capture_size',+this.value)">
+        <option value="160">160 px</option><option value="320" selected>320 px</option><option value="640">640 px</option>
+      </select></div>
+      <div class="row"><label>Monitor</label><input type="number" id="cap-m" min="0" max="8" value="0" onchange="sc('capture.monitor',+this.value)" style="width:70px"></div>
+      <div class="row"><label>FPS Limit<small>0 = kein Limit</small></label><input type="number" id="cap-fps" min="0" max="360" value="0" onchange="sc('capture.fps_limit',+this.value)" style="width:70px"></div>
+      <div class="row"><label>Steady FPS</label><input type="number" id="cap-sfps" min="30" max="360" value="100" onchange="sc('capture.steady_fps',+this.value)" style="width:70px"></div>
+      <div class="row"><label>Kreis-Maske</label><label class="tog"><input type="checkbox" id="cap-ci" onchange="sc('capture.circle_mask',this.checked)"><span class="tog-sl"></span></label></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🌐 UDP / NDI / Card</div>
+      <div class="row"><label>UDP Host</label><input type="text" id="cap-uh" value="0.0.0.0" onchange="sc('capture.udp_host',this.value)" style="width:130px"></div>
+      <div class="row"><label>UDP Port</label><input type="number" id="cap-up" value="9999" onchange="sc('capture.udp_port',+this.value)" style="width:80px"></div>
+      <div class="row"><label>NDI Source</label><input type="text" id="cap-nd" placeholder="CroixAI-PC" onchange="sc('capture.ndi_source',this.value)" style="width:130px"></div>
+      <div class="row"><label>Card Source</label><input type="text" id="cap-cs" placeholder="USB Video" onchange="sc('capture.capture_card_source',this.value)" style="width:130px"></div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--tx3);margin-top:4px">
+    Änderungen gelten beim nächsten Loop-Start (■ Stop → ▶ Start).
+  </p>
+</div>
+
+<!-- ══ INPUT ══ -->
+<div id="tab-input" class="tab">
+  <h2>🖱 Input Backend</h2>
+  <p class="section-note">Wähle das Maus-Backend. Ändert sich beim nächsten Loop-Start (■ Stop → ▶ Start).</p>
+
+  <div class="ib-grid" id="ib-grid">
+    <div class="ib-card" onclick="setInputBackend('relative_mouse')" id="ib-relative_mouse">
+      <div class="ib-name">SendInput</div>
+      <div class="ib-desc">Windows API. Funktioniert in Borderless-Window Spielen. Kein Extra-Hardware nötig.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('ghub')" id="ib-ghub">
+      <div class="ib-name">Logitech G-Hub</div>
+      <div class="ib-desc">Logitech G-Hub HTTP API. Braucht G-Hub installiert + kompatible Maus.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('arduino')" id="ib-arduino">
+      <div class="ib-name">Arduino Leonardo</div>
+      <div class="ib-desc">Arduino/Pro Micro über USB-Serial. Erscheint als HID Maus.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('kmbox_net')" id="ib-kmbox_net">
+      <div class="ib-name">KMBOX Net</div>
+      <div class="ib-desc">KMBOX Net UDP. Hardware KVM Switch Maus-Emulator.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('makcu')" id="ib-makcu">
+      <div class="ib-name">MAKCU</div>
+      <div class="ib-desc">MAKCU ESP32-S3 über USB-Serial. Günstiger Arduino-Ersatz.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('rp2040')" id="ib-rp2040">
+      <div class="ib-name">RP2040 / RP2350</div>
+      <div class="ib-desc">Raspberry Pi Pico als HID Maus. Sehr niedriger Latenz.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('titan_two')" id="ib-titan_two">
+      <div class="ib-name">Titan Two</div>
+      <div class="ib-desc">Titan Two ConsoleTuner Serial-Interface.</div>
+    </div>
+    <div class="ib-card" onclick="setInputBackend('kernel_driver')" id="ib-kernel_driver">
+      <div class="ib-name">Kernel Driver</div>
+      <div class="ib-desc">Windows Kernel-Level Maus (Interception). Stärkste Tarnung.</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="inp-serial-card">
+      <div class="card-title">🔌 Serial (Arduino / MAKCU / RP2040)</div>
+      <div class="row"><label>COM Port</label><input type="text" id="inp-port" placeholder="COM3" onchange="sc('input.serial_port',this.value)" style="width:90px"></div>
+      <div class="row"><label>Baudrate</label><select id="inp-baud" onchange="sc('input.serial_baud',+this.value)">
+        <option value="9600">9600</option><option value="115200" selected>115200</option><option value="250000">250000</option><option value="500000">500000</option>
+      </select></div>
+    </div>
+    <div class="card" id="inp-kmbox-card">
+      <div class="card-title">📡 KMBOX Net</div>
+      <div class="row"><label>IP Adresse</label><input type="text" id="inp-kip" placeholder="192.168.2.188" onchange="sc('input.kmbox_ip',this.value)" style="width:145px"></div>
+      <div class="row"><label>Port</label><input type="number" id="inp-kpo" value="1408" onchange="sc('input.kmbox_port',+this.value)" style="width:80px"></div>
+    </div>
+    <div class="card" id="inp-ghub-card">
+      <div class="card-title">🖱 G-Hub</div>
+      <div class="row"><label>HTTP Port</label><input type="number" id="inp-gp" value="12010" onchange="sc('input.ghub_port',+this.value)" style="width:80px"></div>
+    </div>
+  </div>
 </div>
 
 <!-- ══ HOTKEYS ══ -->
 <div id="tab-hotkeys" class="tab">
   <h2>⌨️ Hotkeys</h2>
-  <p style="color:var(--tx2);font-size:13px;margin-bottom:18px">Klick auf einen Button → gewünschte Taste drücken. Maustasten funktionieren auch.</p>
+  <p class="section-note">Klick auf Button → Taste drücken. ESC = Abbrechen. Maustasten funktionieren auch.</p>
   <div class="grid">
     <div class="card">
       <div class="card-title">🎯 Aim</div>
       <div class="row"><label>Aim Key<small>Halten zum Zielen</small></label><button class="keybind" id="k-aim" onclick="bindKey('k-aim','aim.aim_key')">…</button></div>
-      <div class="row"><label>Toggle<small>Aimbot an/aus</small></label><button class="keybind" id="k-tog" onclick="bindKey('k-tog','aim.toggle_key')">…</button></div>
+      <div class="row"><label>Toggle<small>Aimbot an / aus</small></label><button class="keybind" id="k-tog" onclick="bindKey('k-tog','aim.toggle_key')">…</button></div>
       <div class="row"><label>Pause</label><button class="keybind" id="k-pau" onclick="bindKey('k-pau','aim.pause_key')">…</button></div>
-      <div class="row"><label>Exit</label><button class="keybind" id="k-ex" onclick="bindKey('k-ex','aim.exit_key')">…</button></div>
+      <div class="row"><label>Exit (App)</label><button class="keybind" id="k-ex" onclick="bindKey('k-ex','aim.exit_key')">…</button></div>
     </div>
     <div class="card">
-      <div class="card-title">🔫 Trigger & UI</div>
+      <div class="card-title">🔫 Trigger &amp; UI</div>
       <div class="row"><label>Trigger Key</label><button class="keybind" id="k-tr" onclick="bindKey('k-tr','triggerbot.trigger_key')">…</button></div>
-      <div class="row"><label>Overlay</label><button class="keybind" id="k-ov" onclick="bindKey('k-ov','aim.overlay_key')">…</button></div>
+      <div class="row"><label>Overlay Toggle</label><button class="keybind" id="k-ov" onclick="bindKey('k-ov','aim.overlay_key')">…</button></div>
       <div class="row"><label>Screenshot</label><button class="keybind" id="k-ss" onclick="bindKey('k-ss','aim.screenshot_key')">…</button></div>
     </div>
   </div>
 </div>
 
-<!-- ══ SETUP / DRIVERS ══ -->
+<!-- ══ DRIVERS ══ -->
 <div id="tab-setup" class="tab">
-  <h2>🔧 Treiber & Pakete</h2>
-  <div style="display:flex;gap:8px;margin-bottom:18px">
+  <h2>🔧 Treiber &amp; Pakete</h2>
+  <div style="display:flex;gap:8px;margin-bottom:16px">
     <button class="btn btn-out btn-sm" onclick="loadSetup()">🔄 Aktualisieren</button>
     <button class="btn btn-acc btn-sm" onclick="installAll()">⬇ Alle fehlenden installieren</button>
   </div>
@@ -418,14 +544,45 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
 <!-- ══ PROFILES ══ -->
 <div id="tab-profiles" class="tab">
   <h2>👤 Profile</h2>
-  <div class="card" style="max-width:420px;margin-bottom:18px">
+  <div class="card" style="max-width:420px;margin-bottom:16px">
     <div class="card-title">➕ Neues Profil</div>
     <div style="display:flex;gap:8px">
-      <input type="text" id="np-name" placeholder="Profilname" style="flex:1">
+      <input type="text" id="np-name" placeholder="Profilname (z.B. valorant_ranked)" style="flex:1">
       <button class="btn btn-acc btn-sm" onclick="createProfile()">Erstellen</button>
     </div>
   </div>
-  <div id="profile-list" style="display:flex;flex-direction:column;gap:8px;max-width:500px"></div>
+  <div id="profile-list" style="display:flex;flex-direction:column;gap:8px;max-width:520px"></div>
+</div>
+
+<!-- ══ INFO ══ -->
+<div id="tab-info" class="tab">
+  <h2>ℹ️ Info &amp; Debug</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">⚙️ Debug</div>
+      <div class="row"><label>FPS anzeigen<small>Im Overlay</small></label><label class="tog"><input type="checkbox" id="dbg-fps" onchange="sc('debug.show_fps',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Verbose Logging</label><label class="tog"><input type="checkbox" id="dbg-v" onchange="sc('debug.verbose',this.checked)"><span class="tog-sl"></span></label></div>
+      <div class="row"><label>Discord RPC</label><label class="tog"><input type="checkbox" id="inf-dc" onchange="sc('info.discord_rpc',this.checked)"><span class="tog-sl"></span></label></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🔗 Tunnel</div>
+      <div class="row"><label>Tunnel URL</label><span id="inf-tun" style="font-size:12px;color:var(--acc2);font-family:monospace">—</span></div>
+      <div style="font-size:12px;color:var(--tx3);margin-top:8px;line-height:1.6">
+        Mit Tunnel-URL kannst du das UI von überall aufrufen.<br>
+        Tunnel startet automatisch beim App-Start.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📦 CroixAI</div>
+      <div style="font-size:13px;color:var(--tx2);line-height:1.8">
+        <div>Version: <b style="color:var(--tx)">1.0</b></div>
+        <div>Port: <b style="color:var(--tx)">17384</b></div>
+        <div>Log: <code>logs/croixai.log</code></div>
+      </div>
+      <div class="sep"></div>
+      <button class="btn btn-rd btn-sm" onclick="killApp()">⏻ App beenden</button>
+    </div>
+  </div>
 </div>
 
 </div><!-- /content -->
@@ -434,7 +591,7 @@ input[type=color]{width:36px;height:30px;padding:2px;border-radius:6px;border:1p
 
 <script>
 // ══════════════════════════════════════════════════════
-// Core API
+// Core
 // ══════════════════════════════════════════════════════
 let _cfg = {};
 
@@ -453,12 +610,13 @@ function toast(msg, type='info') {
   const el = document.createElement('div');
   el.className = `toast-item toast-${type}`;
   el.textContent = msg;
-  document.getElementById('toast').appendChild(el);
+  const c = document.getElementById('toast');
+  c.appendChild(el);
   setTimeout(()=>el.remove(), 3800);
 }
 
 // ══════════════════════════════════════════════════════
-// Status polling
+// Status polling (every 800ms)
 // ══════════════════════════════════════════════════════
 setInterval(async()=>{
   try { updateStatus(await fetch('/x/s').then(r=>r.json())); } catch{}
@@ -466,21 +624,31 @@ setInterval(async()=>{
 
 function updateStatus(s) {
   const fps = (+s.fps||0).toFixed(1);
-  for (const id of ['h-fps','s-fps']) set(id,fps);
-  for (const id of ['h-tgt','s-tgt']) set(id,s.detection_count||0);
-  for (const id of ['h-mode','s-mode']) set(id,s.aim_mode||'—');
-  set('h-prov',(s.provider||'—').toUpperCase());
-  set('s-prov',(s.provider||'—').toUpperCase());
-  set('s-input',(s.input_backend||'—').replace(/_/g,' '));
-  set('s-cap',(s.capture_backend||'—').toUpperCase());
-  set('h-prof',s.active_profile||'default');
-  set('sc-prof',s.active_profile||'default');
-  badge('h-loop',s.running,'RUNNING','STOPPED','b-gr','b-rd');
-  badge('sc-status',s.running,'RUNNING','STOPPED','b-gr','b-rd');
-  badge('sc-mf',s.model_found,'FOUND ✓','NOT FOUND','b-gr','b-rd');
-  vis('h-aim',s.aim_active);
-  vis('sc-aim-y',s.aim_active); vis('sc-aim-n',!s.aim_active&&s.running);
-  vis('sc-pause-y',s.paused); vis('sc-pause-n',!s.paused);
+  set('h-fps', fps); set('s-fps', fps);
+  set('h-tgt', s.detection_count||0); set('s-tgt', s.detection_count||0);
+  const mode = s.aim_mode||'—';
+  set('h-mode', mode); set('s-mode', mode);
+  const prov = (s.provider||'—').toUpperCase();
+  set('h-prov', prov); set('s-prov', prov);
+  set('s-input', (s.input_backend||'—').replace(/_/g,' '));
+  set('s-cap', (s.capture_backend||'—').toUpperCase());
+  const prof = s.active_profile||'default';
+  set('h-prof', prof); set('sc-prof', prof);
+  set('sc-mp', s.model_path||'—');
+  if (s.tunnel_url) { set('inf-tun', s.tunnel_url); set('sc-tun', s.tunnel_url); }
+
+  badge('h-loop', s.running, 'RUNNING','STOPPED','b-gr','b-rd');
+  badge('sc-status', s.running, 'RUNNING','STOPPED','b-gr','b-rd');
+  badge('h-mf', s.model_found, 'MODEL OK','NO MODEL','b-gr','b-rd');
+  badge('sc-mf', s.model_found, 'FOUND ✓','NOT FOUND','b-gr','b-rd');
+  badge('sc-aim', s.aim_active, 'AKTIV','INAKTIV','b-gr','b-rd');
+  vis('h-aim', s.aim_active);
+  vis('sc-pause', s.paused); vis('sc-nopause', !s.paused);
+
+  // Glow when active
+  const el = document.getElementById('h-aim');
+  if (el) el.classList.toggle('glow', !!s.aim_active);
+
   if (s.error) { vis('sc-errc',true); set('sc-err',s.error); }
   else vis('sc-errc',false);
 }
@@ -497,39 +665,34 @@ function badge(id,cond,t1,t2,c1,c2){
 async function loadConfig() {
   try { _cfg=await fetch('/x/c').then(r=>r.json()); applyToUI(_cfg); } catch{}
 }
-function gv(path){return path.split('.').reduce((o,k)=>o?.[k],_cfg);}
+function gv(path){ return path.split('.').reduce((o,k)=>o?.[k],_cfg); }
+
 function applyToUI(c) {
-  _cfg=c;
-  function sv(id,v){const e=document.getElementById(id);if(!e||v==null)return;e.value=v;}
-  function sc_(id,v){const e=document.getElementById(id);if(!e)return;e.checked=!!v;}
+  _cfg = c;
+  const sv=(id,v)=>{const e=document.getElementById(id);if(e&&v!=null)e.value=v;};
+  const sc_=(id,v)=>{const e=document.getElementById(id);if(e)e.checked=!!v;};
+
   // Aimbot
   sc_('a-en',gv('aim.enabled')); sc_('a-aa',gv('aim.auto_aim'));
   sv('a-pos',gv('aim.position')||'head');
   sl('a-fx','a-fx-v',gv('aim.fov_x')); sl('a-fy','a-fy-v',gv('aim.fov_y'));
   sl('a-spd','a-spd-v',gv('aim.speed')); sl('a-sc','a-sc-v',gv('aim.scope_multiplier'));
-  sl('a-sn','a-sn-v',gv('aim.snap_radius')); sl('a-nr','a-nr-v',gv('aim.near_radius'));
   sl('a-sm','a-sm-v',gv('aim.smoothness'));
+  sl('a-sn','a-sn-v',gv('aim.snap_radius')); sl('a-nr','a-nr-v',gv('aim.near_radius'));
   // Recoil
   sc_('r-en',gv('aim.recoil.enabled'));
   sl('r-st','r-st-v',gv('aim.recoil.strength')); sl('r-sm','r-sm-v',gv('aim.recoil.smoothness'));
-  // Wind mouse
+  // Wind Mouse
   sc_('wm-en',gv('aim.wind_mouse.enabled'));
   sl('wm-g','wm-g-v',gv('aim.wind_mouse.gravity')); sl('wm-w','wm-w-v',gv('aim.wind_mouse.wind'));
   sl('wm-ms','wm-ms-v',gv('aim.wind_mouse.max_step'));
   // Prediction
   sc_('pr-en',gv('aim.prediction.enabled'));
   sl('pr-i','pr-i-v',gv('aim.prediction.interval')); sl('pr-fp','pr-fp-v',gv('aim.prediction.future_positions'));
-  // Detection
-  const mp=gv('detection.model_path')||'';
-  sv('det-path',mp); sv('m-path',mp);
-  sl('det-c','det-c-v',gv('detection.confidence_threshold'));
-  sv('det-b',String(gv('detection.blob_size')||320));
-  sc_('det-cu',gv('detection.use_cuda')); sc_('det-tr',gv('detection.use_tensorrt'));
-  // Capture
-  sv('cap-bk',gv('capture.backend')||'dxgi');
-  sv('cap-sz',String(gv('capture.capture_size')||320));
-  sv('cap-m',gv('capture.monitor_index')||0);
-  sc_('cap-ci',gv('capture.circle_mask'));
+  // Sticky
+  sc_('st-en',gv('aim.sticky_target.enabled'));
+  sl('st-hd','st-hd-v',gv('aim.sticky_target.hold_duration'));
+  sc_('st-sf',gv('aim.sticky_target.static_filter'));
   // Triggerbot
   sc_('tb-en',gv('triggerbot.enabled')); sc_('tb-au',gv('aim.auto_shoot'));
   sl('tb-c','tb-c-v',gv('triggerbot.confidence_threshold'));
@@ -538,31 +701,67 @@ function applyToUI(c) {
   sl('tb-bu','tb-bu-v',gv('triggerbot.burst_frames'));
   sl('tb-co','tb-co-v',gv('triggerbot.cooldown_ms'));
   sc_('tb-cc',gv('triggerbot.color_check'));
+  // Detection
+  const mp=gv('detection.model_path')||''; sv('m-path',mp);
+  sl('det-c','det-c-v',gv('detection.confidence_threshold'));
+  sv('det-b',String(gv('detection.blob_size')||320));
+  sl('det-n','det-n-v',gv('detection.nms_threshold'));
+  sv('det-md',gv('detection.max_detections')||10);
+  sc_('det-cu',gv('detection.use_cuda')); sc_('det-tr',gv('detection.use_tensorrt'));
+  // Capture
+  sv('cap-bk',gv('capture.backend')||'dxgi');
+  sv('cap-sz',String(gv('capture.capture_size')||320));
+  sv('cap-m',gv('capture.monitor')||0);
+  sv('cap-fps',gv('capture.fps_limit')||0);
+  sv('cap-sfps',gv('capture.steady_fps')||100);
+  sc_('cap-ci',gv('capture.circle_mask'));
+  sv('cap-uh',gv('capture.udp_host')||'0.0.0.0');
+  sv('cap-up',gv('capture.udp_port')||9999);
+  sv('cap-nd',gv('capture.ndi_source')||'');
+  sv('cap-cs',gv('capture.capture_card_source')||'');
+  // Input backend
+  sv('inp-port',gv('input.serial_port')||'COM3');
+  sv('inp-baud',String(gv('input.serial_baud')||115200));
+  sv('inp-kip',gv('input.kmbox_ip')||'192.168.2.188');
+  sv('inp-kpo',gv('input.kmbox_port')||1408);
+  sv('inp-gp',gv('input.ghub_port')||12010);
+  // Highlight active backend card
+  const curIb=gv('input.backend')||'relative_mouse';
+  document.querySelectorAll('.ib-card').forEach(el=>el.classList.remove('active-ib'));
+  const activeEl=document.getElementById('ib-'+curIb);
+  if(activeEl) activeEl.classList.add('active-ib');
   // Overlay
   sc_('ov-en',gv('overlay.enabled')); sc_('ov-bx',gv('overlay.detection_boxes'));
   sc_('ov-fd',gv('overlay.future_dots')); sc_('ov-cb',gv('overlay.capture_border'));
   sc_('ov-ti',gv('overlay.target_icons'));
   sl('ov-th','ov-th-v',gv('overlay.box_thickness'));
+  sl('ov-op','ov-op-v',gv('overlay.opacity'));
+  const bc=gv('overlay.box_color'); if(bc&&document.getElementById('ov-bc'))document.getElementById('ov-bc').value=bc;
+  const dc=gv('overlay.future_dot_color'); if(dc&&document.getElementById('ov-dc'))document.getElementById('ov-dc').value=dc;
   // Hotkeys
   setKey('k-aim',gv('aim.aim_key')); setKey('k-tog',gv('aim.toggle_key'));
   setKey('k-pau',gv('aim.pause_key')); setKey('k-ex',gv('aim.exit_key'));
   setKey('k-tr',gv('triggerbot.trigger_key'));
   setKey('k-ov',gv('aim.overlay_key')); setKey('k-ss',gv('aim.screenshot_key'));
+  // Debug / Info
+  sc_('dbg-fps',gv('debug.show_fps')); sc_('dbg-v',gv('debug.verbose'));
+  sc_('inf-dc',gv('info.discord_rpc'));
 }
 function sl(sid,vid,v){
   const e=document.getElementById(sid),ve=document.getElementById(vid);
   if(!e||v==null)return; e.value=v;
-  if(ve){const n=parseFloat(v); ve.textContent=n%1===0?n:n.toFixed(2);}
+  if(ve){const n=parseFloat(v);ve.textContent=Number.isInteger(n)?n:n.toFixed(2);}
 }
-function slv(vid,v){const e=document.getElementById(vid);if(e){const n=parseFloat(v);e.textContent=n%1===0?n:n.toFixed(2);}}
+function slv(vid,v){const e=document.getElementById(vid);if(e){const n=parseFloat(v);e.textContent=Number.isInteger(n)?n:n.toFixed(2);}}
 function setKey(id,v){const e=document.getElementById(id);if(e&&v)e.textContent=(v+'').toUpperCase();}
+
 async function sc(path,val){
   const parts=path.split('.');const body={};let node=body;
   for(let i=0;i<parts.length-1;i++){node[parts[i]]={};node=node[parts[i]];}
   node[parts[parts.length-1]]=val;
-  try{await api('POST','/x/c',body);}catch{}
+  try{const r=await api('POST','/x/c',body);_cfg=r;}catch{}
 }
-async function saveConfig(){try{await api('POST','/x/v');toast('Gespeichert ✓','ok');}catch{}}
+async function saveConfig(){try{await api('POST','/x/v');toast('Config gespeichert ✓','ok');}catch{}}
 
 // ══════════════════════════════════════════════════════
 // Loop
@@ -571,7 +770,17 @@ async function startLoop(){
   try{const r=await api('POST','/x/r');r.ok?toast('Loop gestartet ✓','ok'):toast(r.reason||'Bereits aktiv','info');}catch{}
 }
 async function stopLoop(){try{await api('POST','/x/p');toast('Loop gestoppt','info');}catch{}}
-async function killApp(){if(!confirm('App beenden?'))return;try{await api('POST','/x/k');}catch{}}
+async function killApp(){if(!confirm('App wirklich beenden?'))return;try{await api('POST','/x/k');}catch{}}
+
+// ══════════════════════════════════════════════════════
+// Input Backend
+// ══════════════════════════════════════════════════════
+async function setInputBackend(name){
+  await sc('input.backend',name);
+  document.querySelectorAll('.ib-card').forEach(el=>el.classList.remove('active-ib'));
+  const el=document.getElementById('ib-'+name);if(el)el.classList.add('active-ib');
+  toast(`Backend: ${name} ✓ (Loop neu starten)`, 'ok');
+}
 
 // ══════════════════════════════════════════════════════
 // Keybind capture
@@ -581,28 +790,22 @@ function bindKey(elId,cfgPath){
   if(_bind){
     document.removeEventListener('keydown',_bind.kh);
     document.removeEventListener('mousedown',_bind.mh);
-    document.getElementById(_bind.elId).classList.remove('listening');
+    document.getElementById(_bind.elId)?.classList.remove('listening');
     if(_bind.elId===elId){_bind=null;loadConfig();return;}
   }
   const el=document.getElementById(elId);
   el.textContent='…'; el.classList.add('listening');
+  const keyMap={' ':'space','escape':'escape','arrowup':'up','arrowdown':'down',
+    'arrowleft':'left','arrowright':'right','pause':'pause','insert':'insert',
+    'delete':'delete','home':'home','end':'end','pageup':'pageup','pagedown':'pagedown'};
   const kh=(e)=>{
     e.preventDefault();e.stopPropagation();
-    const map={' ':'space','escape':'escape','arrowup':'up','arrowdown':'down',
-      'arrowleft':'left','arrowright':'right','pause':'pause','insert':'insert',
-      'delete':'delete','home':'home','end':'end','pageup':'pageup','pagedown':'pagedown'};
-    let k=(map[e.key.toLowerCase()]||e.key.toLowerCase()).replace('f1','f1').replace('f2','f2')
-      .replace('f3','f3').replace('f4','f4').replace('f5','f5').replace('f6','f6')
-      .replace('f7','f7').replace('f8','f8').replace('f9','f9').replace('f10','f10')
-      .replace('f11','f11').replace('f12','f12');
+    let k=keyMap[e.key.toLowerCase()]||e.key.toLowerCase();
     if(k==='escape'){cancelBind(elId);return;}
     finishBind(elId,cfgPath,k);
   };
-  const mh=(e)=>{
-    e.preventDefault();
-    const m={0:'mouse1',1:'mouse3',2:'mouse2',3:'mouse4',4:'mouse5'};
-    finishBind(elId,cfgPath,m[e.button]||`mouse${e.button+1}`);
-  };
+  const mouseMap={0:'mouse1',1:'mouse3',2:'mouse2',3:'mouse4',4:'mouse5'};
+  const mh=(e)=>{e.preventDefault();finishBind(elId,cfgPath,mouseMap[e.button]||`mouse${e.button+1}`);};
   _bind={elId,cfgPath,kh,mh};
   setTimeout(()=>{
     document.addEventListener('keydown',kh);
@@ -611,9 +814,10 @@ function bindKey(elId,cfgPath){
 }
 function cancelBind(elId){
   if(_bind){document.removeEventListener('keydown',_bind.kh);document.removeEventListener('mousedown',_bind.mh);}
-  const el=document.getElementById(elId);el.classList.remove('listening');
+  const el=document.getElementById(elId);
+  el?.classList.remove('listening');
   const v=_bind?.cfgPath?gv(_bind.cfgPath):null;
-  el.textContent=v?(v+'').toUpperCase():'?';
+  if(el)el.textContent=v?(v+'').toUpperCase():'?';
   _bind=null;
 }
 async function finishBind(elId,cfgPath,key){
@@ -621,25 +825,21 @@ async function finishBind(elId,cfgPath,key){
   document.removeEventListener('mousedown',_bind?.mh);
   _bind=null;
   const el=document.getElementById(elId);
-  el.classList.remove('listening');el.textContent=key.toUpperCase();
+  el?.classList.remove('listening');
+  if(el)el.textContent=key.toUpperCase();
   await sc(cfgPath,key);
   toast(`${cfgPath.split('.').pop()} → ${key.toUpperCase()} ✓`,'ok');
-  loadConfig();
 }
 
 // ══════════════════════════════════════════════════════
 // Models
 // ══════════════════════════════════════════════════════
-function pickModel(inp,targetId){
-  const name=inp.files[0]?.name||'';
-  const el=document.getElementById(targetId);if(el)el.value=name;
-}
 async function applyModelPath(){
   const path=(document.getElementById('m-path')||{}).value||'';
-  if(!path){toast('Kein Pfad angegeben','err');return;}
+  if(!path){toast('Kein Pfad','err');return;}
   await sc('detection.model_path',path);
   const st=document.getElementById('m-status');
-  if(st){st.textContent='✓ Gesetzt — Loop neu starten zum Laden';st.style.color='var(--gr)';}
+  if(st){st.textContent='✓ Gesetzt — Loop neu starten';st.style.color='var(--gr)';}
   toast('Model Pfad gesetzt ✓','ok');
 }
 async function scanModels(){
@@ -653,7 +853,7 @@ async function scanModels(){
     }
     sl.innerHTML='<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">'+
       data.files.map(f=>`
-        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:7px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+        <div style="background:var(--bg3);border:1px solid var(--brd);border-radius:7px;padding:9px 13px;display:flex;align-items:center;gap:10px">
           <div>
             <div style="font-weight:700;font-size:13px;color:var(--tx)">${f.filename}</div>
             <div style="font-size:11px;color:var(--tx3)">${f.size_mb} MB · ${f.type.toUpperCase()}</div>
@@ -668,7 +868,6 @@ async function loadScannedModel(filename){
     await api('POST','/x/models/load-file',{filename});
     toast(`${filename} geladen ✓`,'ok');
     loadConfig();
-    // Also update path input
     const el=document.getElementById('m-path');if(el)el.value='models\\'+filename;
   }catch{}
 }
@@ -676,27 +875,27 @@ async function loadModels(){
   try{
     const data=await fetch('/x/models').then(r=>r.json());
     const grid=document.getElementById('model-grid');
-    if(!data.models?.length){grid.innerHTML='<p style="color:var(--tx3)">Keine Models definiert.</p>';return;}
+    if(!data.models?.length){grid.innerHTML='<p style="color:var(--tx3)">Keine Models registriert.</p>';return;}
     grid.innerHTML=data.models.map(m=>`
       <div class="model-card ${m.on_disk?'on-disk':''}">
         <div class="mc-head"><span class="mc-icon">${m.icon||'🤖'}</span>
           <div><div class="mc-name">${m.name}</div><div class="mc-game">${m.game||''}</div></div></div>
-        <div class="mc-desc">${(m.description||'').slice(0,110)}…</div>
+        <div class="mc-desc">${(m.description||'').slice(0,100)}…</div>
         <div class="mc-tags">
           <span class="mc-tag">${m.arch||'yolov8n'}</span>
           <span class="mc-tag">${m.blob_size||320}px</span>
           <span class="mc-tag">conf ${m.confidence||0.5}</span>
         </div>
         <div class="mc-foot">
-          <span class="${m.on_disk?'mc-ok':'mc-no'}">${m.on_disk?'✓ Vorhanden':'✗ Fehlt — in models/ ablegen'}</span>
+          <span style="font-size:11px;color:${m.on_disk?'var(--gr)':'var(--tx3)'}">${m.on_disk?'✓ Vorhanden':'✗ Nicht gefunden'}</span>
           ${m.on_disk?`<button class="btn btn-gr btn-sm" onclick="useModel('${m.name}')">✓ Laden</button>`:''}
         </div>
-        <div style="font-size:11px;color:var(--tx3);margin-top:6px">Datei: models/${m.filename}</div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:5px">models/${m.filename}</div>
       </div>`).join('');
   }catch(e){document.getElementById('model-grid').innerHTML=`<p style="color:var(--rd)">Fehler: ${e.message}</p>`;}
 }
 async function useModel(name){
-  try{await api('POST',`/x/models/${name}/use`);toast(`Model "${name}" geladen ✓`,'ok');loadConfig();}catch{}
+  try{await api('POST',`/x/models/${name}/use`);toast(`Model "${name}" aktiv ✓`,'ok');loadConfig();}catch{}
 }
 
 // ══════════════════════════════════════════════════════
@@ -713,17 +912,17 @@ async function loadPresets(){
         <div class="pc-name">${p.name}</div>
         <div class="pc-model">⚡ ${p.model||'?'}</div>
         <div class="pc-tags">${(p.tags||[]).map(t=>`<span class="pc-tag b-${p.badge_color||'bl'}">${t}</span>`).join('')}</div>
-        <div style="font-size:11px;color:var(--tx2);margin-bottom:12px;line-height:1.4">${(p.description||'').slice(0,120)}</div>
+        <div class="pc-desc">${(p.description||'').slice(0,120)}</div>
         <button class="btn btn-acc btn-sm" style="width:100%" onclick="applyPreset('${p.id}')">⚡ Apply</button>
       </div>`).join('');
   }catch(e){document.getElementById('preset-grid').innerHTML=`<p style="color:var(--rd)">Fehler: ${e.message}</p>`;}
 }
 async function applyPreset(id){
-  try{await api('POST',`/x/presets/${id}/apply`);toast(`Preset "${id}" angewendet ✓`,'ok');loadConfig();}catch{}
+  try{await api('POST',`/x/presets/${id}/apply`);toast(`Preset "${id}" ✓`,'ok');loadConfig();}catch{}
 }
 
 // ══════════════════════════════════════════════════════
-// Setup / Drivers
+// Drivers
 // ══════════════════════════════════════════════════════
 async function loadSetup(){
   const cnt=document.getElementById('setup-content');
@@ -740,29 +939,27 @@ async function loadSetup(){
         const cls=d.installed?'ok':(d.type==='manual'?'manual-type':'missing');
         const scls=d.installed?'drv-ok':(d.type==='manual'?'drv-man':'drv-no');
         const stxt=d.installed?'✓ OK':(d.type==='manual'?'⚠ Manuell':'✗ Fehlt');
+        const urlMatch=(d.manual_note||'').match(/https?:\/\/\S+/);
         const btn=d.installed?'':(d.type==='manual'
-          ?`<a href="${(d.manual_note||'').match(/https?:\/\/\S+/)?.[0]||'#'}" target="_blank" class="btn btn-out btn-sm">🔗 Download</a>`
+          ?`<a href="${urlMatch?.[0]||'#'}" target="_blank" class="btn btn-out btn-sm">🔗 Download</a>`
           :`<button class="btn btn-acc btn-sm" onclick="installDrv('${d.id}')">⬇ Installieren</button>`);
         html+=`<div class="drv ${cls}" id="drv-${d.id}">
           <div class="drv-top"><span class="drv-lbl">${d.label}</span><span class="${scls}">${stxt}</span></div>
-          <div class="drv-desc">${d.description}</div>
-          ${d.type==='manual'&&d.manual_note?`<div class="drv-note">${d.manual_note}</div>`:''}
+          <div class="drv-desc">${d.description||''}</div>
+          ${d.type==='manual'&&d.manual_note?`<div class="drv-note">${d.manual_note.replace(/https?:\/\/\S+/g,u=>`<a href="${u}" target="_blank" style="color:var(--acc2)">${u}</a>`)}</div>`:''}
           <div>${btn}</div>
           <div class="drv-prog" id="drv-p-${d.id}"></div>
         </div>`;
       }
       html+='</div>';
     }
-    cnt.innerHTML=html;
+    cnt.innerHTML=html||'<p style="color:var(--tx3)">Keine Treiber gefunden.</p>';
   }catch(e){cnt.innerHTML=`<p style="color:var(--rd)">Fehler: ${e.message}</p>`;}
 }
 async function installDrv(id){
-  try{
-    const prog=document.getElementById(`drv-p-${id}`);
-    if(prog)prog.textContent='Startet…';
-    await api('POST',`/x/setup/install/${id}`);
-    pollProg(id);
-  }catch{}
+  const prog=document.getElementById(`drv-p-${id}`);
+  if(prog)prog.textContent='Startet…';
+  try{await api('POST',`/x/setup/install/${id}`);pollProg(id);}catch{}
 }
 function pollProg(id){
   const el=document.getElementById(`drv-p-${id}`);
@@ -773,7 +970,7 @@ function pollProg(id){
       if(el)el.textContent=s;
       if(s==='done'||s.startsWith('done:')||s.startsWith('error:')){
         clearInterval(iv);
-        s.startsWith('error:')?toast(`Fehler ${id}: ${s.slice(6)}`,'err'):toast(`${id} ✓`,'ok');
+        s.startsWith('error:')?toast(`Fehler ${id}: ${s.slice(6)}`,'err'):toast(`${id} installiert ✓`,'ok');
         setTimeout(loadSetup,1200);
       }
     }catch{clearInterval(iv);}
@@ -783,9 +980,12 @@ async function installAll(){
   try{
     const data=await fetch('/x/setup/check').then(r=>r.json());
     const miss=(data.drivers||[]).filter(d=>!d.installed&&d.type!=='manual');
-    if(!miss.length){toast('Alle Treiber installiert ✓','ok');return;}
+    if(!miss.length){toast('Alles installiert ✓','ok');return;}
     toast(`Installiere ${miss.length} Paket(e)…`,'info');
-    for(const d of miss){await api('POST',`/x/setup/install/${d.id}`);pollProg(d.id);await new Promise(r=>setTimeout(r,300));}
+    for(const d of miss){
+      try{await api('POST',`/x/setup/install/${d.id}`);pollProg(d.id);}catch{}
+      await new Promise(r=>setTimeout(r,300));
+    }
   }catch{}
 }
 
@@ -798,7 +998,7 @@ async function loadProfiles(){
     const el=document.getElementById('profile-list');
     el.innerHTML=(data.profiles||[]).map(p=>{
       const active=p===data.active;
-      return `<div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid ${active?'var(--acc)':'var(--brd)'};border-radius:9px;padding:12px 16px">
+      return `<div style="display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid ${active?'var(--acc)':'var(--brd)'};border-radius:9px;padding:11px 15px">
         <span style="font-weight:700;font-size:14px;color:${active?'var(--acc2)':'var(--tx)'}">${p}</span>
         ${active?'<span class="badge b-gr">AKTIV</span>':''}
         <div style="flex:1"></div>
@@ -810,22 +1010,27 @@ async function loadProfiles(){
 }
 async function createProfile(){
   const n=(document.getElementById('np-name').value||'').trim();
-  if(!n)return;
-  await api('POST',`/x/profiles/${n}`);
-  document.getElementById('np-name').value='';
-  toast(`Profil "${n}" erstellt ✓`,'ok'); loadProfiles();
+  if(!n){toast('Profilname fehlt','err');return;}
+  try{
+    await api('POST',`/x/profiles/${n}`);
+    document.getElementById('np-name').value='';
+    toast(`Profil "${n}" erstellt ✓`,'ok'); loadProfiles();
+  }catch{}
 }
-async function switchProfile(n){await api('POST',`/x/profiles/${n}/switch`);toast(`Profil "${n}" aktiv ✓`,'ok');loadProfiles();}
-async function delProfile(n){if(!confirm(`"${n}" löschen?`))return;await api('DELETE',`/x/profiles/${n}`);toast(`Gelöscht`,'info');loadProfiles();}
+async function switchProfile(n){
+  try{await api('POST',`/x/profiles/${n}/switch`);toast(`Profil "${n}" aktiv ✓`,'ok');loadProfiles();}catch{}
+}
+async function delProfile(n){
+  if(!confirm(`Profil "${n}" wirklich löschen?`))return;
+  try{await api('DELETE',`/x/profiles/${n}`);toast('Gelöscht','info');loadProfiles();}catch{}
+}
 
 // ══════════════════════════════════════════════════════
 // Navigation
 // ══════════════════════════════════════════════════════
-const _tabs=['status','presets','aimbot','triggerbot','overlay','models','hotkeys','setup','profiles'];
+const _tabs=['status','presets','aimbot','triggerbot','overlay','models','capture','input','hotkeys','setup','profiles','info'];
 function show(tab){
-  _tabs.forEach(t=>{
-    document.getElementById('tab-'+t)?.classList.remove('active');
-  });
+  _tabs.forEach(t=>document.getElementById('tab-'+t)?.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+tab)?.classList.add('active');
   const i=_tabs.indexOf(tab);

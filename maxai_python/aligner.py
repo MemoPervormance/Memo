@@ -527,7 +527,7 @@ class CrosshairAligner:
         speed = adaptive_speed(dist, snap, near, aim.speed,
                                min_factor=0.12, max_factor=2.5)
 
-        smoothness = max(1.0, aim.aim_smoothness)
+        smoothness = max(1.0, aim.smoothness)
         # Ramp-in: first few frames after acquiring target, move more gently
         effective_s = smoothness * lerp(2.5, 1.0, acq_ramp)
 

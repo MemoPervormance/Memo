@@ -46,7 +46,7 @@ snap_radius      = 22.0
 near_radius      = 80.0
 scope_multiplier = 1.0
 head_from_top    = 0.10
-aim_smoothness   = 1.0
+smoothness       = 1.0              # 1=direkt 5=sehr smooth
 aim_speed        = 0.001
 
 [aim.sticky_target]
@@ -94,17 +94,17 @@ parallax_x = 0.0
 parallax_y = 0.0
 
 [triggerbot]
-enabled            = false
-trigger_key        = "mouse4"
-min_confidence     = 0.65
-crosshair_radius   = 8.0
-min_frames         = 3
-delay_ms           = 30
-burst_ms           = 80
-cooldown_ms        = 120
-visibility_check   = true
-min_pixel_variance = 15.0
-sample_size        = 5
+enabled              = false
+trigger_key          = "mouse4"
+confidence_threshold = 0.65         # Confidence-Schwellwert
+crosshair_radius     = 8.0          # Pixel-Radius um Fadenkreuz
+min_frames           = 3            # Bestätigungs-Frames
+fire_delay_ms        = 30           # Verzögerung vor Schuss ms
+burst_frames         = 3            # Burst-Frames (1 Frame ≈ 16ms)
+cooldown_ms          = 120          # Abkühlzeit nach Burst ms
+color_check          = true         # Pixel-Farb-Bestätigung
+min_pixel_variance   = 15.0
+sample_size          = 5
 
 [overlay]
 enabled           = false

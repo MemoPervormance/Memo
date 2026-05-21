@@ -85,7 +85,7 @@ class AimConfig(BaseModel):
     scope_multiplier: float = 1.0
 
     head_from_top: float = 0.10
-    aim_smoothness: float = 1.0
+    smoothness: float = 1.0
     aim_speed: float = 0.001
 
     sticky_target: StickyTargetConfig = Field(default_factory=StickyTargetConfig)
@@ -128,13 +128,13 @@ class CrosshairConfig(BaseModel):
 class TriggerbotConfig(BaseModel):
     enabled: bool = False
     trigger_key: str = "mouse4"
-    min_confidence: float = 0.65
+    confidence_threshold: float = 0.65
     crosshair_radius: float = 8.0
     min_frames: int = 3
-    delay_ms: int = 30
-    burst_ms: int = 80
+    fire_delay_ms: int = 30
+    burst_frames: int = 3
     cooldown_ms: int = 120
-    visibility_check: bool = True
+    color_check: bool = True
     min_pixel_variance: float = 15.0
     sample_size: int = 5
 
