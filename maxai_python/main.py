@@ -98,10 +98,42 @@ def _parse_args():
     return p.parse_args()
 
 
+_COCO_URL  = "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.onnx"
+_COCO_FILE = "yolov8n_coco.onnx"
+_COCO_DEFAULTS = {
+    "detection": {
+        "model_path":             str(_ROOT / "models" / _COCO_FILE),
+        "blob_size":              640,
+        "confidence_threshold":   0.35,
+        "target_classes":         [0],
+    }
+}
+
+
 def _scan_models() -> list[str]:
     """Return list of .onnx/.engine files found in models/ folder."""
     d = _ROOT / "models"
     return [f.name for f in d.iterdir() if f.suffix in (".onnx", ".engine")]
+
+
+def _ensure_base_model() -> bool:
+    """Download yolov8n_coco.onnx if not present. Returns True if available after call."""
+    dest = _ROOT / "models" / _COCO_FILE
+    if dest.exists() and dest.stat().st_size > 100_000:
+        return True
+    print(f"\n  Lade Basis-Model herunter ({_COCO_URL})…")
+    try:
+        import urllib.request
+        urllib.request.urlretrieve(_COCO_URL, str(dest))
+        if dest.stat().st_size > 100_000:
+            print(f"  ✓ Basis-Model OK ({dest.stat().st_size // 1024} KB)")
+            return True
+        dest.unlink(missing_ok=True)
+    except Exception as exc:
+        logger.warning(f"Auto-download failed: {exc}")
+        print(f"  ⚠ Download fehlgeschlagen: {exc}")
+        print(f"  → Führe DOWNLOAD_MODEL.bat aus oder lege eine .onnx Datei in models\\ ab.")
+    return False
 
 
 def main() -> None:
@@ -113,13 +145,6 @@ def main() -> None:
     print(f"  Web-UI   : http://127.0.0.1:{port}")
     print(f"  Log      : {log_path}")
 
-    # Show discovered models
-    found_models = _scan_models()
-    if found_models:
-        print(f"\n  ✓ Models gefunden: {', '.join(found_models)}")
-    else:
-        print(f"\n  ⚠ Keine Models in models\\ — lege .onnx Datei dort ab.")
-
     logger.info("CroixAI starting…")
 
     cfg_mgr  = ConfigManager()
@@ -129,10 +154,32 @@ def main() -> None:
     if args.profile:
         prof_mgr.switch(args.profile)
 
-    # Auto-load first found model if config has no model set
-    if not cfg.detection.model_path and found_models:
+    # ── Model discovery & auto-setup ──────────────────────────────────────
+    found_models = _scan_models()
+    coco_path    = _ROOT / "models" / _COCO_FILE
+
+    if found_models:
+        print(f"\n  ✓ Models gefunden: {', '.join(found_models)}")
+    else:
+        print(f"\n  ⚠ Kein Model gefunden — versuche Basis-Model herunterzuladen…")
+        if _ensure_base_model():
+            found_models = _scan_models()
+
+    # Apply COCO defaults if the COCO model is present and not yet configured
+    if coco_path.exists() and coco_path.stat().st_size > 100_000:
+        if not cfg.detection.model_path or not Path(cfg.detection.model_path).exists():
+            cfg_mgr.update(_COCO_DEFAULTS)
+            cfg = cfg_mgr.get()
+            print(f"  → Basis-Model gesetzt: {_COCO_FILE} "
+                  f"(blob=640, conf=0.35, target_classes=[0])")
+        elif cfg.detection.model_path.endswith(_COCO_FILE) and not cfg.detection.target_classes:
+            cfg_mgr.update({"detection": {"target_classes": [0], "blob_size": 640,
+                                          "confidence_threshold": 0.35}})
+            cfg = cfg_mgr.get()
+    elif not cfg.detection.model_path and found_models:
         first = str(_ROOT / "models" / found_models[0])
         cfg_mgr.update({"detection": {"model_path": first}})
+        cfg = cfg_mgr.get()
         print(f"  → Model automatisch gesetzt: {found_models[0]}")
 
     # Input backend — selection saved to config so UI can change it later

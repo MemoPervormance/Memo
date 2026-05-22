@@ -220,7 +220,10 @@ def create_app(
         models = []
         for m in list_models():
             entry = {k: v for k, v in m.items() if k != "recommended_for"}
-            entry["on_disk"] = download_status.get(m["name"], False)
+            ds = download_status.get(m["name"], {})
+            entry["on_disk"]      = ds.get("on_disk", False) if isinstance(ds, dict) else bool(ds)
+            entry["size_mb"]      = ds.get("size_mb", 0) if isinstance(ds, dict) else 0
+            entry["downloadable"] = ds.get("downloadable", False) if isinstance(ds, dict) else False
             models.append(entry)
         return JSONResponse({"models": models})
 
@@ -230,8 +233,12 @@ def create_app(
         if not info:
             raise HTTPException(404, f"Model '{model_name}' not found")
         models_dir = Path(__file__).parent / "models"
-        on_disk = (models_dir / info["filename"]).exists()
-        return JSONResponse({**info, "on_disk": on_disk})
+        p = models_dir / info["filename"]
+        return JSONResponse({
+            **info,
+            "on_disk": p.exists(),
+            "size_mb": round(p.stat().st_size / 1_048_576, 1) if p.exists() else 0,
+        })
 
     @app.get("/x/models/for/{game_id}")
     async def models_for_game(game_id: str):
@@ -251,15 +258,16 @@ def create_app(
         model_path = models_dir / info["filename"]
         if not model_path.exists():
             raise HTTPException(400, f"Model file not found: {info['filename']}. Train it first.")
-        updated = config_mgr.update({
-            "detection": {
-                "model_path":             str(model_path),
-                "confidence_threshold":   info["confidence"],
-                "nms_threshold":          info["nms"],
-                "blob_size":              info["blob_size"],
-                "use_tensorrt":           False,
-            }
-        })
+        det_update: dict = {
+            "model_path":           str(model_path),
+            "confidence_threshold": info["confidence"],
+            "nms_threshold":        info["nms"],
+            "blob_size":            info["blob_size"],
+            "use_tensorrt":         model_path.suffix == ".engine",
+        }
+        if info.get("target_classes"):
+            det_update["target_classes"] = info["target_classes"]
+        config_mgr.update({"detection": det_update})
         return JSONResponse({"ok": True, "model": model_name, "path": str(model_path)})
 
     # ------------------------------------------------------------------

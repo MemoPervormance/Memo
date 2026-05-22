@@ -17,6 +17,32 @@ from typing import Any, Dict, List, Optional
 
 MODELS: Dict[str, Dict[str, Any]] = {
 
+    # ── COCO Base Model (auto-downloaded, works out of the box) ───────────
+    "YOLOV8N-COCO": {
+        "name":        "YOLOV8N-COCO",
+        "codename":    "COCO",
+        "game":        "Universal (COCO)",
+        "icon":        "🌍",
+        "arch":        "yolov8n",
+        "blob_size":   640,
+        "classes":     ["person"],
+        "target_classes": [0],
+        "description": (
+            "Offizielles Ultralytics YOLOv8n auf COCO trainiert. "
+            "Erkennt 'Person' (Klasse 0) in allen Spielen. "
+            "Wird automatisch bei INSTALL.bat heruntergeladen. "
+            "Ideal als sofort einsatzbereites Basis-Modell."
+        ),
+        "recommended_for": ["valorant", "cs2_faceit", "apex", "fortnite",
+                            "cod_warzone", "r6_siege", "rust"],
+        "confidence":  0.35,
+        "nms":         0.45,
+        "training":    None,
+        "filename":    "yolov8n_coco.onnx",
+        "download_url": "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.onnx",
+        "perf":        "ultra_fast",
+    },
+
     # ── Universal ──────────────────────────────────────────────────────────
     "NEXUS-UNI": {
         "name":        "NEXUS-UNI",
@@ -232,10 +258,14 @@ def list_models() -> List[Dict[str, Any]]:
     return list(MODELS.values())
 
 
-def get_download_status(models_dir: Path) -> Dict[str, bool]:
+def get_download_status(models_dir: Path) -> Dict[str, Any]:
     """Check which model files are present on disk."""
     result = {}
     for name, info in MODELS.items():
         path = models_dir / info["filename"]
-        result[name] = path.exists()
+        result[name] = {
+            "on_disk":      path.exists(),
+            "size_mb":      round(path.stat().st_size / 1_048_576, 1) if path.exists() else 0,
+            "downloadable": bool(info.get("download_url")),
+        }
     return result
