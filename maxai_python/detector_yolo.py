@@ -116,8 +116,6 @@ def _build_session(
             "trt_engine_cache_path": str(Path(model_path).parent),
             "trt_max_workspace_size": 1 << 30,
         }
-        if is_engine:
-            trt_opts["trt_engine_cache_path"] = str(Path(model_path).parent)
         providers.append(("TensorrtExecutionProvider", trt_opts))
 
     if use_cuda and not is_engine:
@@ -128,7 +126,12 @@ def _build_session(
 
     providers.append("CPUExecutionProvider")
 
-    available = ort.get_available_providers()
+    # get_available_providers was added in onnxruntime 1.4 — graceful fallback
+    try:
+        available = ort.get_available_providers()
+    except AttributeError:
+        available = [p[0] if isinstance(p, tuple) else p for p in providers]
+
     selected: list = []
     for p in providers:
         name = p[0] if isinstance(p, tuple) else p
@@ -138,8 +141,17 @@ def _build_session(
         selected = ["CPUExecutionProvider"]
 
     opts = ort.SessionOptions()
-    opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-    session = ort.InferenceSession(model_path, sess_options=opts, providers=selected)
+    try:
+        opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+    except AttributeError:
+        pass
+
+    try:
+        session = ort.InferenceSession(model_path, sess_options=opts, providers=selected)
+    except TypeError:
+        # Older ORT versions don't accept providers kwarg
+        session = ort.InferenceSession(model_path, sess_options=opts)
+
     provider_used = selected[0][0] if isinstance(selected[0], tuple) else selected[0]
     return session, provider_used
 
