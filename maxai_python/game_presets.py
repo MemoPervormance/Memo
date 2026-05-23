@@ -130,8 +130,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "fortnite",
-        "model":       "STORM-FN",
-        "model_file":  "storm_fn.onnx",
+        "model":       "FORTNITE",
+        "model_file":  "fortnite.onnx",
         "name":        "Fortnite",
         "icon":        "🏗",
         "description": "Easy Anti-Cheat. Borderless-window recommended. "
@@ -156,7 +156,7 @@ GAME_PRESETS: List[Dict[str, Any]] = [
             "aim.prediction.future_positions": 10,
             "aim.recoil.enabled":   False,
             "aim.wind_mouse.enabled":  False,
-            "detection.confidence_threshold": 0.50,
+            "detection.confidence_threshold": 0.45,
             "detection.blob_size":   320,
             "detection.target_classes": [0],
             "capture.backend":       "dxgi",
@@ -202,8 +202,8 @@ GAME_PRESETS: List[Dict[str, Any]] = [
     },
     {
         "id":          "r6_siege",
-        "model":       "BREACH-R6",
-        "model_file":  "breach_r6.onnx",
+        "model":       "R6-LESSFALSE",
+        "model_file":  "R6lessfalsdtc.onnx",
         "name":        "Rainbow Six Siege",
         "icon":        "🛡",
         "description": "BattlEye anti-cheat. Hardware input recommended for ranked. "
@@ -231,11 +231,11 @@ GAME_PRESETS: List[Dict[str, Any]] = [
             "aim.wind_mouse.gravity":  10.0,
             "aim.wind_mouse.wind":     2.0,
             "aim.wind_mouse.max_step": 6.0,
-            "detection.confidence_threshold": 0.58,
-            "detection.blob_size":   320,
+            "detection.confidence_threshold": 0.55,
+            "detection.blob_size":   640,
             "detection.target_classes": [0],
             "capture.backend":       "dxgi",
-            "capture.capture_size":  320,
+            "capture.capture_size":  640,
         },
     },
     {

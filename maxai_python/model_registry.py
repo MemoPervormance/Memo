@@ -17,6 +17,96 @@ from typing import Any, Dict, List, Optional
 
 MODELS: Dict[str, Dict[str, Any]] = {
 
+    # ── Uploaded / Custom Models ──────────────────────────────────────────
+    "R6": {
+        "name":        "R6",
+        "codename":    "R6",
+        "game":        "Rainbow Six Siege",
+        "icon":        "🛡",
+        "arch":        "yolov8",
+        "blob_size":   640,
+        "classes":     ["head"],
+        "target_classes": [0],
+        "description": (
+            "Rainbow Six Siege — 640×640 Single-Class Head Model. "
+            "Optimiert für enge Winkel und Peeks. Hohe Präzision."
+        ),
+        "recommended_for": ["r6_siege"],
+        "confidence":  0.50,
+        "nms":         0.40,
+        "training":    None,
+        "filename":    "R6.onnx",
+        "download_url": None,
+        "perf":        "precise",
+    },
+
+    "R6-LESSFALSE": {
+        "name":        "R6-LESSFALSE",
+        "codename":    "R6LF",
+        "game":        "Rainbow Six Siege",
+        "icon":        "🛡",
+        "arch":        "yolov8",
+        "blob_size":   640,
+        "classes":     ["head"],
+        "target_classes": [0],
+        "description": (
+            "Rainbow Six Siege — weniger False Positives. "
+            "640×640, höhere Confidence empfohlen. "
+            "Ideal für Ranked / FaceIt."
+        ),
+        "recommended_for": ["r6_siege"],
+        "confidence":  0.55,
+        "nms":         0.40,
+        "training":    None,
+        "filename":    "R6lessfalsdtc.onnx",
+        "download_url": None,
+        "perf":        "precise",
+    },
+
+    "FORTNITE": {
+        "name":        "FORTNITE",
+        "codename":    "FN",
+        "game":        "Fortnite",
+        "icon":        "🏗",
+        "arch":        "yolov8n",
+        "blob_size":   320,
+        "classes":     ["head"],
+        "target_classes": [0],
+        "description": (
+            "Fortnite — 320×320 Single-Class Head Model. "
+            "Schnell und effizient. Ideal für High-FPS Gaming."
+        ),
+        "recommended_for": ["fortnite"],
+        "confidence":  0.45,
+        "nms":         0.45,
+        "training":    None,
+        "filename":    "fortnite.onnx",
+        "download_url": None,
+        "perf":        "ultra_fast",
+    },
+
+    "FORTNITE-BADPC": {
+        "name":        "FORTNITE-BADPC",
+        "codename":    "FNBPC",
+        "game":        "Fortnite",
+        "icon":        "🏗",
+        "arch":        "yolov8",
+        "blob_size":   640,
+        "classes":     ["head"],
+        "target_classes": [0],
+        "description": (
+            "Fortnite — trainiert auf Low-Quality / Low-Settings Footage. "
+            "640×640, funktioniert auch bei schlechter GPU / niedrigen Grafik-Settings."
+        ),
+        "recommended_for": ["fortnite"],
+        "confidence":  0.40,
+        "nms":         0.45,
+        "training":    None,
+        "filename":    "FN_BAD_PC.onnx",
+        "download_url": None,
+        "perf":        "balanced",
+    },
+
     # ── COCO Base Model (auto-downloaded, works out of the box) ───────────
     "YOLOV8N-COCO": {
         "name":        "YOLOV8N-COCO",
