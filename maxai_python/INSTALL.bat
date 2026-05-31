@@ -89,14 +89,31 @@ out = models_dir / 'yolov8n_coco.onnx'
 if out.exists() and out.stat().st_size > 100_000:
     print('  Basis-Model bereits vorhanden: yolov8n_coco.onnx')
 else:
-    url = 'https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.onnx'
-    print(f'  Lade YOLOv8n COCO herunter...')
-    try:
-        urllib.request.urlretrieve(url, str(out))
-        print(f'  OK — {out.stat().st_size//1024} KB gespeichert: {out}')
-    except Exception as e:
-        print(f'  [WARNUNG] Download fehlgeschlagen: {e}')
-        print('  Fuehre DOWNLOAD_MODEL.bat manuell aus.')
+    urls = [
+        'https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.onnx',
+        'https://github.com/ultralytics/assets/releases/download/v8.3.0/yolov8n.onnx',
+    ]
+    print('  Lade YOLOv8n COCO herunter...')
+    ok = False
+    for url in urls:
+        try:
+            import ssl, urllib.request
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, context=ctx, timeout=60) as r:
+                data = r.read()
+            if len(data) > 100_000:
+                out.write_bytes(data)
+                print(f'  OK — {len(data)//1024} KB gespeichert: {out}')
+                ok = True
+                break
+        except Exception as e:
+            print(f'  Versuch fehlgeschlagen ({url}): {e}')
+    if not ok:
+        print('  [WARNUNG] Download fehlgeschlagen.')
+        print('  Lege yolov8n_coco.onnx manuell in den models\\ Ordner.')
 
 cfg_path = root / 'config.toml'
 if not cfg_path.exists():
