@@ -265,9 +265,9 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
       Aim &amp; FOV
     </div>
-    <div class="sb-item" onclick="nav('prediction')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-      Prediction
+    <div class="sb-item" onclick="nav('titantwo')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/><line x1="12" y1="8" x2="12" y2="16"/></svg>
+      Titan Two
     </div>
     <div class="sb-item" onclick="nav('capture')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M16 3H8l-2 4h12l-2-4z"/></svg>
@@ -284,10 +284,6 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
     <div class="sb-item" onclick="nav('advanced')">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       Advanced
-    </div>
-    <div class="sb-item" onclick="nav('guide')">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      HW Guide
     </div>
   </div>
 
@@ -384,17 +380,9 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
             <div class="row-label">Aim Body Only<small>Skip headshots</small></div>
             <label class="tog"><input type="checkbox" id="d-body" onchange="sc('aim.position',this.checked?'body':'head')"><span class="tog-sl"></span></label>
           </div>
-          <div class="row">
+          <div class="row" style="border-bottom:none">
             <div class="row-label">No Recoil</div>
             <label class="tog"><input type="checkbox" id="d-recoil" onchange="sc('aim.recoil.enabled',this.checked)"><span class="tog-sl"></span></label>
-          </div>
-          <div class="row">
-            <div class="row-label">Auto Shoot</div>
-            <label class="tog"><input type="checkbox" id="d-autoshoot" onchange="sc('aim.auto_shoot',this.checked)"><span class="tog-sl"></span></label>
-          </div>
-          <div class="row">
-            <div class="row-label">Wind Mouse<small>Humanized movement</small></div>
-            <label class="tog"><input type="checkbox" id="d-wm" onchange="sc('aim.wind_mouse.enabled',this.checked)"><span class="tog-sl"></span></label>
           </div>
         </div>
 
@@ -422,7 +410,7 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
               <option value="">— Select Model —</option>
             </select>
           </div>
-          <div class="row">
+          <div class="row" style="border-bottom:none">
             <div class="row-label">Mouse Device</div>
             <select id="qs-device" onchange="sc('input.backend',this.value)">
               <option value="relative_mouse">SendInput (WIN32)</option>
@@ -434,14 +422,6 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
               <option value="rp2350">RP2350</option>
               <option value="titan_two">Titan Two</option>
             </select>
-          </div>
-          <div class="row">
-            <div class="row-label">Confidence</div>
-            <div class="sw"><input type="range" min="0.1" max="0.99" step="0.01" id="qs-conf" oninput="slv('qs-conf-v',this.value);sc('detection.confidence_threshold',+this.value)"><span class="sv" id="qs-conf-v">0.50</span></div>
-          </div>
-          <div class="row" style="margin-top:4px;border-bottom:none;padding-top:14px">
-            <button class="btn btn-ghost" onclick="saveConfig()" style="flex:1;margin-right:8px">💾 Save Config</button>
-            <button class="btn btn-pur" onclick="nav('detection');scanModels()">📁 Browse Models</button>
           </div>
         </div>
       </div>
@@ -639,6 +619,48 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
             <button class="btn btn-ghost" onclick="saveConfig()" style="flex:1">💾 Save</button>
             <button class="btn btn-red" onclick="killApp()">⏻ Exit</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TITAN TWO ══ -->
+    <div id="pg-titantwo" class="page">
+      <div class="page-title">Titan Two</div>
+      <div class="page-sub">ConsoleTuner Titan Two — XIM-compatible script controller.</div>
+      <div class="grid">
+        <div class="panel">
+          <div class="card-title">Connection</div>
+          <div class="row"><div class="row-label">Enable Titan Two</div><label class="tog"><input type="checkbox" onchange="sc('input.backend',this.checked?'titan_two':'relative_mouse');hlHW(this.checked?'titan_two':'relative_mouse');sSel('qs-device',this.checked?'titan_two':'relative_mouse')" id="tt-en"><span class="tog-sl"></span></label></div>
+          <div class="row"><div class="row-label">Serial Port<small>e.g. COM5</small></div><input type="text" id="tt-port" value="COM5" onchange="sc('input.serial_port',this.value);document.getElementById('hw-sp').value=this.value" style="width:90px"></div>
+          <div class="row"><div class="row-label">Baud Rate</div><input type="number" id="tt-baud" value="115200" onchange="sc('input.serial_baud',+this.value)" style="width:90px"></div>
+          <div class="row" style="border-bottom:none">
+            <button class="btn btn-pur" style="width:100%;margin-top:4px" onclick="setHW('titan_two');document.getElementById('tt-en').checked=true;sSel('qs-device','titan_two');toast('Titan Two aktiviert ✓','ok')">🎮 Titan Two aktivieren</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Titan Two Info</div>
+          <div class="spec-row"><span class="sk">Hersteller</span><span class="sv2">ConsoleTuner</span></div>
+          <div class="spec-row"><span class="sk">Protokoll</span><span class="sv2">USB Serial (CDC)</span></div>
+          <div class="spec-row"><span class="sk">Baud Rate</span><span class="sv2">115200</span></div>
+          <div class="spec-row"><span class="sk">Latenz</span><span class="sv2">&lt; 1 ms</span></div>
+          <div class="spec-row"><span class="sk">Plattform</span><span class="sv2">PC / PS / Xbox</span></div>
+          <div class="spec-row"><span class="sk">AC Evasion</span><span class="sv2 badge b-grn">Hardware HID</span></div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Aim Settings (Titan Two)</div>
+          <div class="row"><div class="row-label">Speed</div><div class="sw"><input type="range" min="0.1" max="5.0" step="0.05" id="tt-spd" oninput="slv('tt-spd-v',this.value);sc('aim.speed',+this.value)"><span class="sv" id="tt-spd-v">1.2</span></div></div>
+          <div class="row"><div class="row-label">FOV X</div><div class="sw"><input type="range" min="10" max="200" step="1" id="tt-fx" oninput="slv('tt-fx-v',this.value);sc('aim.fov_x',+this.value)"><span class="sv" id="tt-fx-v">60</span></div></div>
+          <div class="row"><div class="row-label">FOV Y</div><div class="sw"><input type="range" min="10" max="200" step="1" id="tt-fy" oninput="slv('tt-fy-v',this.value);sc('aim.fov_y',+this.value)"><span class="sv" id="tt-fy-v">60</span></div></div>
+          <div class="row"><div class="row-label">Wind Mouse</div><label class="tog"><input type="checkbox" id="tt-wm" onchange="sc('aim.wind_mouse.enabled',this.checked)"><span class="tog-sl"></span></label></div>
+          <div class="row" style="border-bottom:none"><div class="row-label">No Recoil</div><label class="tog"><input type="checkbox" id="tt-rc" onchange="sc('aim.recoil.enabled',this.checked)"><span class="tog-sl"></span></label></div>
+        </div>
+        <div class="panel">
+          <div class="card-title">Setup Guide</div>
+          <div class="spec-row"><span class="sk">1.</span><span class="sv2">Titan Two per USB anschließen</span></div>
+          <div class="spec-row"><span class="sk">2.</span><span class="sv2">Geräte-Manager → COM-Port notieren</span></div>
+          <div class="spec-row"><span class="sk">3.</span><span class="sv2">Port oben eintragen (z.B. COM5)</span></div>
+          <div class="spec-row"><span class="sk">4.</span><span class="sv2">"Titan Two aktivieren" klicken</span></div>
+          <div class="spec-row"><span class="sk">5.</span><span class="sv2">Engine starten → fertig</span></div>
         </div>
       </div>
     </div>
