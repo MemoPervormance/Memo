@@ -555,24 +555,137 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
     <!-- ══ DEVICE ══ -->
     <div id="pg-device" class="page">
       <div class="page-title">Device</div>
-      <div class="page-sub">Mouse input hardware and serial settings.</div>
-      <div class="hw-grid" id="hw-grid" style="margin-bottom:16px">
-        <div class="hw-card" onclick="setHW('relative_mouse')" id="hw-relative_mouse"><div class="hw-icon">🖱️</div><div class="hw-name">SendInput</div><div class="hw-desc">Windows API</div></div>
-        <div class="hw-card" onclick="setHW('ghub')" id="hw-ghub"><div class="hw-icon">🟢</div><div class="hw-name">Logitech G-Hub</div><div class="hw-desc">HTTP API</div></div>
-        <div class="hw-card" onclick="setHW('arduino')" id="hw-arduino"><div class="hw-icon">🔌</div><div class="hw-name">Arduino</div><div class="hw-desc">USB-Serial HID</div></div>
-        <div class="hw-card" onclick="setHW('kmbox_net')" id="hw-kmbox_net"><div class="hw-icon">📦</div><div class="hw-name">KMBOX Net</div><div class="hw-desc">UDP KVM</div></div>
-        <div class="hw-card" onclick="setHW('makcu')" id="hw-makcu"><div class="hw-icon">⚡</div><div class="hw-name">MAKCU</div><div class="hw-desc">ESP32-S3</div></div>
-        <div class="hw-card" onclick="setHW('rp2040')" id="hw-rp2040"><div class="hw-icon">💎</div><div class="hw-name">RP2040</div><div class="hw-desc">Recommended</div></div>
-        <div class="hw-card" onclick="setHW('rp2350')" id="hw-rp2350"><div class="hw-icon">💎</div><div class="hw-name">RP2350</div><div class="hw-desc">Pico 2</div></div>
-        <div class="hw-card" onclick="setHW('titan_two')" id="hw-titan_two"><div class="hw-icon">🎮</div><div class="hw-name">Titan Two</div><div class="hw-desc">XIM compat.</div></div>
+      <div class="page-sub">Wähle dein Maus-Backend. Je nach Anti-Cheat brauchst du unterschiedliche Hardware.</div>
+
+      <!-- AC Legend -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <span class="badge b-grn">✓ Vanguard</span>
+        <span class="badge b-grn">✓ FaceIt</span>
+        <span class="badge b-grn">✓ BattlEye</span>
+        <span class="badge b-ora">✓ EAC</span>
+        <span class="badge b-pur">✓ Ricochet</span>
+        <span style="font-size:.65rem;color:var(--tx2);padding:4px">← Welche Anti-Cheats ein Gerät unterstützt</span>
       </div>
-      <div class="panel" style="max-width:440px">
-        <div class="card-title">Connection Settings</div>
-        <div class="row"><div class="row-label">Serial Port</div><input type="text" id="hw-sp" value="COM3" onchange="sc('input.serial_port',this.value)" style="width:90px"></div>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-bottom:16px">
+
+        <!-- SendInput -->
+        <div class="hw-card" onclick="setHW('relative_mouse')" id="hw-relative_mouse" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">🖱️</span>
+            <div><div class="hw-name">SendInput (WIN32)</div><div class="hw-desc">Software · Windows API</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-ora">EAC</span><span class="badge b-pur">Ricochet</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4">Fortnite, Apex, Warzone, Rust — nur Borderless Window. <b style="color:var(--red)">Nicht</b> für Vanguard/FaceIt/BattlEye.</div>
+        </div>
+
+        <!-- Logitech G-Hub -->
+        <div class="hw-card" onclick="setHW('ghub')" id="hw-ghub" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">🟢</span>
+            <div><div class="hw-name">Logitech G-Hub</div><div class="hw-desc">Software · HTTP API</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-ora">EAC</span><span class="badge b-pur">Ricochet</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4">Nur für Logitech-Mäuse. Ähnlich wie SendInput. G-Hub muss laufen. <b style="color:var(--red)">Nicht</b> für Vanguard/FaceIt.</div>
+        </div>
+
+        <!-- Arduino -->
+        <div class="hw-card" onclick="setHW('arduino')" id="hw-arduino" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">🔌</span>
+            <div><div class="hw-name">Arduino Leonardo</div><div class="hw-desc">Hardware · USB-Serial HID</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-grn">FaceIt</span><span class="badge b-grn">BattlEye</span><span class="badge b-ora">EAC</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4">CS2 FaceIt, R6 Siege. Günstiger Einstieg in Hardware-Input (~10€). <b style="color:var(--red)">Nicht</b> für Vanguard.</div>
+        </div>
+
+        <!-- KMBOX Net -->
+        <div class="hw-card" onclick="setHW('kmbox_net')" id="hw-kmbox_net" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">📦</span>
+            <div><div class="hw-name">KMBOX Net</div><div class="hw-desc">Hardware · UDP KVM</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-grn">Vanguard</span><span class="badge b-grn">FaceIt</span><span class="badge b-grn">BattlEye</span><span class="badge b-ora">EAC</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4"><b style="color:var(--grn)">Beste Wahl für Valorant.</b> Echter KVM — PC sieht keine Software-Maus. Funktioniert mit allen Anti-Cheats.</div>
+        </div>
+
+        <!-- MAKCU -->
+        <div class="hw-card" onclick="setHW('makcu')" id="hw-makcu" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">⚡</span>
+            <div><div class="hw-name">MAKCU (ESP32-S3)</div><div class="hw-desc">Hardware · USB HID</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-grn">FaceIt</span><span class="badge b-grn">BattlEye</span><span class="badge b-ora">EAC</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4">Günstig, schnell. CS2/R6/Apex. 2-PC Setup möglich. Gutes Preis-Leistung.</div>
+        </div>
+
+        <!-- RP2040 -->
+        <div class="hw-card" onclick="setHW('rp2040')" id="hw-rp2040" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">💎</span>
+            <div><div class="hw-name">RP2040 (Pico)</div><div class="hw-desc">Hardware · USB HID · Empfohlen</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-grn">FaceIt</span><span class="badge b-grn">BattlEye</span><span class="badge b-ora">EAC</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4"><b style="color:var(--grn)">Empfohlen für 1-PC.</b> Raspberry Pi Pico (~5€). Niedrigste Latenz. CS2, R6, Apex, Fortnite, Warzone.</div>
+        </div>
+
+        <!-- RP2350 -->
+        <div class="hw-card" onclick="setHW('rp2350')" id="hw-rp2350" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">💎</span>
+            <div><div class="hw-name">RP2350 (Pico 2)</div><div class="hw-desc">Hardware · USB HID</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-grn">FaceIt</span><span class="badge b-grn">BattlEye</span><span class="badge b-ora">EAC</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4">Neuere Version des RP2040. Mehr Leistung, gleiche Kompatibilität. Pico 2 (~7€).</div>
+        </div>
+
+        <!-- Titan Two -->
+        <div class="hw-card" onclick="setHW('titan_two')" id="hw-titan_two" style="text-align:left;padding:14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:1.4rem">🎮</span>
+            <div><div class="hw-name">Titan Two</div><div class="hw-desc">Hardware · USB HID / XIM</div></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px">
+            <span class="badge b-grn">FaceIt</span><span class="badge b-grn">BattlEye</span><span class="badge b-ora">EAC</span>
+          </div>
+          <div style="font-size:.62rem;color:var(--tx2);line-height:1.4">ConsoleTuner Titan Two. Auch für Konsole nutzbar. Eigene Config-Seite → Tab "Titan Two".</div>
+        </div>
+
+      </div>
+
+      <div class="panel" style="max-width:480px">
+        <div class="card-title">Verbindungseinstellungen</div>
+        <div class="row"><div class="row-label">Aktives Gerät</div>
+          <select id="qs-device2" onchange="setHW(this.value)">
+            <option value="relative_mouse">SendInput (WIN32)</option>
+            <option value="ghub">Logitech G-Hub</option>
+            <option value="arduino">Arduino Leonardo</option>
+            <option value="kmbox_net">KMBOX Net</option>
+            <option value="makcu">MAKCU (ESP32-S3)</option>
+            <option value="rp2040">RP2040 (Pico)</option>
+            <option value="rp2350">RP2350 (Pico 2)</option>
+            <option value="titan_two">Titan Two</option>
+          </select>
+        </div>
+        <div class="row"><div class="row-label">Serial Port<small>Arduino / RP2040 / Titan Two</small></div><input type="text" id="hw-sp" value="COM3" onchange="sc('input.serial_port',this.value)" style="width:90px"></div>
         <div class="row"><div class="row-label">Baud Rate</div><input type="number" id="hw-sb" value="115200" onchange="sc('input.serial_baud',+this.value)" style="width:90px"></div>
         <div class="row"><div class="row-label">KMBOX IP</div><input type="text" id="hw-ki" value="192.168.2.188" onchange="sc('input.kmbox_ip',this.value)" style="width:135px"></div>
         <div class="row"><div class="row-label">KMBOX Port</div><input type="number" id="hw-kp" value="1408" onchange="sc('input.kmbox_port',+this.value)" style="width:70px"></div>
-        <div class="row"><div class="row-label">G-Hub Port</div><input type="number" id="hw-gp" value="12010" onchange="sc('input.ghub_port',+this.value)" style="width:70px"></div>
+        <div class="row" style="border-bottom:none"><div class="row-label">G-Hub Port</div><input type="number" id="hw-gp" value="12010" onchange="sc('input.ghub_port',+this.value)" style="width:70px"></div>
       </div>
     </div>
 
@@ -595,31 +708,72 @@ input[type=color]{width:34px;height:28px;border:1px solid var(--brd2);border-rad
     <!-- ══ ADVANCED ══ -->
     <div id="pg-advanced" class="page">
       <div class="page-title">Advanced</div>
-      <div class="page-sub">Overlay, debug and performance options.</div>
+      <div class="page-sub">Overlay / ESP, Debug und Performance-Einstellungen.</div>
       <div class="grid">
+
+        <!-- Overlay -->
         <div class="panel">
           <div class="card-title">Overlay / ESP</div>
-          <div class="row"><div class="row-label">Enabled</div><label class="tog"><input type="checkbox" id="ov-en" onchange="sc('overlay.enabled',this.checked)"><span class="tog-sl"></span></label></div>
-          <div class="row"><div class="row-label">Detection Boxes</div><label class="tog"><input type="checkbox" id="ov-bx" onchange="sc('overlay.detection_boxes',this.checked)"><span class="tog-sl"></span></label></div>
-          <div class="row"><div class="row-label">Box Color</div><input type="color" id="ov-bc" value="#FF0000" oninput="sc('overlay.box_color',this.value)"></div>
-          <div class="row"><div class="row-label">Box Thickness</div><div class="sw"><input type="range" min="1" max="5" step="1" id="ov-th" oninput="slv('ov-th-v',this.value+'px');sc('overlay.box_thickness',+this.value)"><span class="sv" id="ov-th-v">2px</span></div></div>
-          <div class="row"><div class="row-label">Future Dots</div><label class="tog"><input type="checkbox" id="ov-fd" onchange="sc('overlay.future_dots',this.checked)"><span class="tog-sl"></span></label></div>
-          <div class="row"><div class="row-label">Dot Color</div><input type="color" id="ov-dc" value="#e040fb" oninput="sc('overlay.future_dot_color',this.value)"></div>
-          <div class="row"><div class="row-label">Opacity</div><div class="sw"><input type="range" min="0.1" max="1.0" step="0.05" id="ov-op" oninput="slv('ov-op-v',this.value);sc('overlay.opacity',+this.value)"><span class="sv" id="ov-op-v">0.8</span></div></div>
+          <div class="row">
+            <div class="row-label">Overlay aktivieren<small>Zeigt Boxen über dem Spiel</small></div>
+            <label class="tog"><input type="checkbox" id="ov-en" onchange="sc('overlay.enabled',this.checked)"><span class="tog-sl"></span></label>
+          </div>
+          <div class="row">
+            <div class="row-label">Detection Boxen<small>Rahmen um erkannte Spieler</small></div>
+            <label class="tog"><input type="checkbox" id="ov-bx" onchange="sc('overlay.detection_boxes',this.checked)"><span class="tog-sl"></span></label>
+          </div>
+          <div class="row">
+            <div class="row-label">Box Farbe</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="color" id="ov-bc" value="#FF0000" oninput="sc('overlay.box_color',this.value)">
+              <span style="font-size:.65rem;color:var(--tx2)">Rot = Standard</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="row-label">Box Dicke</div>
+            <div class="sw"><input type="range" min="1" max="5" step="1" id="ov-th" oninput="slv('ov-th-v',this.value+'px');sc('overlay.box_thickness',+this.value)"><span class="sv" id="ov-th-v">2px</span></div>
+          </div>
+          <div class="row">
+            <div class="row-label">Ziel-Punkt<small>Punkt im Zentrum des Ziels</small></div>
+            <label class="tog"><input type="checkbox" id="ov-fd" onchange="sc('overlay.future_dots',this.checked)"><span class="tog-sl"></span></label>
+          </div>
+          <div class="row">
+            <div class="row-label">Punkt Farbe</div>
+            <input type="color" id="ov-dc" value="#e040fb" oninput="sc('overlay.future_dot_color',this.value)">
+          </div>
+          <div class="row">
+            <div class="row-label">Transparenz<small>1.0 = voll sichtbar</small></div>
+            <div class="sw"><input type="range" min="0.1" max="1.0" step="0.05" id="ov-op" oninput="slv('ov-op-v',this.value);sc('overlay.opacity',+this.value)"><span class="sv" id="ov-op-v">0.8</span></div>
+          </div>
+          <div class="row" style="border-bottom:none">
+            <div class="row-label">FOV Kreis<small>Zeigt den Aim-Bereich</small></div>
+            <label class="tog"><input type="checkbox" id="ov-fc" onchange="sc('overlay.fov_circle',this.checked)"><span class="tog-sl"></span></label>
+          </div>
         </div>
+
+        <!-- Farb-Presets -->
         <div class="panel">
-          <div class="card-title">Debug &amp; Info</div>
-          <div class="row"><div class="row-label">Show FPS</div><label class="tog"><input type="checkbox" id="dbg-fps" onchange="sc('debug.show_fps',this.checked)"><span class="tog-sl"></span></label></div>
+          <div class="card-title">Box Farb-Presets</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+            <button class="btn btn-ghost" onclick="setBoxColor('#ff4444')" style="justify-content:center;gap:6px;display:flex;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#ff4444;display:inline-block"></span>Rot</button>
+            <button class="btn btn-ghost" onclick="setBoxColor('#22c55e')" style="justify-content:center;gap:6px;display:flex;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#22c55e;display:inline-block"></span>Grün</button>
+            <button class="btn btn-ghost" onclick="setBoxColor('#6c5ce7')" style="justify-content:center;gap:6px;display:flex;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#6c5ce7;display:inline-block"></span>Lila</button>
+            <button class="btn btn-ghost" onclick="setBoxColor('#f97316')" style="justify-content:center;gap:6px;display:flex;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#f97316;display:inline-block"></span>Orange</button>
+            <button class="btn btn-ghost" onclick="setBoxColor('#ffffff')" style="justify-content:center;gap:6px;display:flex;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#ffffff;border:1px solid #333;display:inline-block"></span>Weiß</button>
+            <button class="btn btn-ghost" onclick="setBoxColor('#00d4ff')" style="justify-content:center;gap:6px;display:flex;align-items:center"><span style="width:10px;height:10px;border-radius:50%;background:#00d4ff;display:inline-block"></span>Cyan</button>
+          </div>
+          <div class="sep"></div>
+          <div class="card-title" style="margin-top:12px">Debug &amp; System</div>
+          <div class="row"><div class="row-label">FPS anzeigen</div><label class="tog"><input type="checkbox" id="dbg-fps" onchange="sc('debug.show_fps',this.checked)"><span class="tog-sl"></span></label></div>
           <div class="row"><div class="row-label">Verbose Logging</div><label class="tog"><input type="checkbox" id="dbg-v" onchange="sc('debug.verbose',this.checked)"><span class="tog-sl"></span></label></div>
           <div class="row"><div class="row-label">Discord RPC</div><label class="tog"><input type="checkbox" id="inf-dc" onchange="sc('info.discord_rpc',this.checked)"><span class="tog-sl"></span></label></div>
-          <div class="sep"></div>
           <div class="row"><div class="row-label">Tunnel URL</div><span id="inf-tun" style="font-size:.72rem;color:var(--pur3);font-family:monospace">—</span></div>
-          <div class="sep"></div>
-          <div style="display:flex;gap:8px;margin-top:4px">
+          <div style="display:flex;gap:8px;margin-top:12px">
             <button class="btn btn-ghost" onclick="saveConfig()" style="flex:1">💾 Save</button>
             <button class="btn btn-red" onclick="killApp()">⏻ Exit</button>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -941,7 +1095,10 @@ async function useModel(n){try{await api('POST',`/x/models/${n}/use`);toast('Mod
 
 // ── Hardware ──
 function hlHW(name){document.querySelectorAll('.hw-card').forEach(c=>c.classList.remove('selected'));const e=document.getElementById('hw-'+name);if(e)e.classList.add('selected');}
-async function setHW(name){hlHW(name);sSel('qs-device',name);try{await api('POST','/x/c',{input:{backend:name}});toast('Device: '+name,'ok');}catch{}}
+async function setHW(name){hlHW(name);sSel('qs-device',name);sSel('qs-device2',name);try{await api('POST','/x/c',{input:{backend:name}});toast('Device: '+name,'ok');}catch{}}
+
+// ── Box color preset ──
+async function setBoxColor(hex){const e=document.getElementById('ov-bc');if(e)e.value=hex;try{await api('POST','/x/c',{overlay:{box_color:hex}});toast('Box Farbe gesetzt ✓','ok');}catch{}}
 
 // ── Init ──
 loadConfig();
