@@ -39,9 +39,11 @@ FPS_PAGE = {
             "icon": "🔧",
             "settings": [
                 {"id": "cpu_affinity_boost", "title": "CPU Affinity Optimization", "description": "Assigns game threads to performance cores (P-cores) on hybrid CPUs.", "effect": "Better scheduling on Intel 12th+ gen", "recommendation": "Enable on Intel Alder Lake or newer", "risk": "Medium", "category": "CPU"},
-                {"id": "disable_core_parking", "title": "Disable Core Parking", "description": "Prevents Windows from parking (deactivating) CPU cores.", "effect": "All cores immediately available for game threads", "recommendation": "Enable for gaming", "risk": "Low", "category": "CPU"},
-                {"id": "timer_resolution", "title": "Timer Resolution: 0.5ms", "description": "Sets Windows multimedia timer to maximum resolution.", "effect": "More precise sleep/wait calls, smoother frametimes", "recommendation": "Enable while gaming", "risk": "Low", "category": "CPU"},
+                {"id": "disable_core_parking", "title": "Disable Core Parking", "description": "Prevents Windows from parking (deactivating) CPU cores. Equivalent to Disable Core Parking.reg tweaks.", "effect": "All cores immediately available for game threads", "recommendation": "Enable for gaming", "risk": "Low", "category": "CPU"},
+                {"id": "timer_resolution", "title": "Timer Resolution: Max Precision", "description": "Sets Windows SystemResponsiveness to 0 for maximum multimedia timer precision.", "effect": "More precise sleep/wait calls, smoother frametimes", "recommendation": "Enable while gaming", "risk": "Low", "category": "CPU"},
                 {"id": "msi_mode", "title": "MSI Mode (Message Signaled Interrupts)", "description": "Configures GPU interrupts to MSI for lower latency.", "effect": "Reduces interrupt latency", "recommendation": "Enable for NVIDIA/AMD GPUs", "risk": "Medium", "category": "CPU"},
+                {"id": "disable_power_throttling", "title": "Disable Power Throttling", "description": "Removes Windows Power Throttling that limits background process performance. Based on Disable Power Throttling.reg from premium tweak packs.", "effect": "Prevents OS from throttling game-adjacent processes", "recommendation": "Enable for gaming", "risk": "Low", "category": "CPU"},
+                {"id": "maintain_low_latency", "title": "Maintain Low Latency Boost", "description": "Sets SystemResponsiveness to 0 for maximum system latency reduction. Based on MaintainLowLatency-HighPerformanceBoost.REG.", "effect": "Lower system-wide input and frame latency", "recommendation": "Enable for competitive gaming", "risk": "Low", "category": "CPU"},
             ]
         },
         {
@@ -87,7 +89,7 @@ PING_PAGE = {
             "title": "TCP/IP Stack",
             "icon": "⚙️",
             "settings": [
-                {"id": "tcp_no_delay", "title": "TCP No-Delay (Nagle Off)", "description": "Disables Nagle's algorithm for immediate packet sending.", "effect": "Reduces input latency by 5-20ms", "recommendation": "Enable for gaming", "risk": "Low", "category": "Network"},
+                {"id": "tcp_no_delay", "title": "TCP No-Delay (Nagle Off)", "description": "Disables Nagle's algorithm so packets are sent immediately rather than buffered. Based on Disable Nagles Algorithm.reg from multiple tweak packs.", "effect": "Reduces input latency by 5-20ms", "recommendation": "Enable for gaming", "risk": "Low", "category": "Network"},
                 {"id": "tcp_ack_freq", "title": "TCP ACK Frequency Optimization", "description": "Sends TCP acknowledgements more frequently.", "effect": "Better throughput on high-latency connections", "recommendation": "Enable", "risk": "Low", "category": "Network"},
                 {"id": "rss_scaling", "title": "Receive-Side Scaling (RSS)", "description": "Distributes network processing across multiple CPU cores.", "effect": "Reduces network CPU bottleneck", "recommendation": "Enable on multi-core systems", "risk": "Low", "category": "Network"},
                 {"id": "network_throttling_disable", "title": "Disable Network Throttling", "description": "Removes Windows multimedia network throttling.", "effect": "Full bandwidth available during gaming", "recommendation": "Enable", "risk": "None", "category": "Network"},
@@ -128,14 +130,14 @@ DELAY_PAGE = {
                 {"id": "mouse_accel_off", "title": "Disable Mouse Acceleration", "description": "Removes Windows pointer acceleration (Enhance Pointer Precision).", "effect": "1:1 mouse-to-cursor mapping", "recommendation": "Always disable for FPS games", "risk": "None", "category": "Input"},
                 {"id": "raw_input", "title": "Raw Input Mode", "description": "Bypasses Windows mouse API entirely.", "effect": "Removes all OS processing from mouse input", "recommendation": "Enable in game settings", "risk": "None", "category": "Input"},
                 {"id": "polling_rate_1000", "title": "Mouse Polling Rate: 1000Hz", "description": "Sets mouse report rate to 1000 times per second.", "effect": "1ms input reporting interval", "recommendation": "Set in mouse software", "risk": "None", "category": "Input"},
-                {"id": "usb_interrupt_priority", "title": "USB Controller Interrupt Priority", "description": "Elevates USB interrupt priority for HID devices.", "effect": "Lower USB polling latency", "recommendation": "Enable", "risk": "Low", "category": "Input"},
+                {"id": "usb_interrupt_priority", "title": "Mouse DataQueue Size: Optimal", "description": "Sets mouclass MouseDataQueueSize to 0x14. Based on Mouse-DataQueue.REG from premium tweak packs.", "effect": "Reduces mouse event buffering for lower click latency", "recommendation": "Enable", "risk": "Low", "category": "Input"},
             ]
         },
         {
             "title": "Keyboard Settings",
             "icon": "⌨️",
             "settings": [
-                {"id": "keyboard_polling_1000", "title": "Keyboard Polling Rate: 1000Hz", "description": "Maximizes keyboard USB polling rate.", "effect": "1ms keystroke reporting", "recommendation": "Enable if keyboard supports it", "risk": "None", "category": "Input"},
+                {"id": "keyboard_polling_1000", "title": "Keyboard DataQueue Size: Optimal", "description": "Sets kbdclass KeyboardDataQueueSize to 0x14. Based on Keyboard - DataQueueSize.REG from premium tweak packs.", "effect": "Reduces keyboard event buffering for faster keystroke response", "recommendation": "Enable", "risk": "None", "category": "Input"},
                 {"id": "key_repeat_fast", "title": "Key Repeat Rate: Maximum", "description": "Sets Windows key repeat to maximum speed.", "effect": "Faster repeated key presses", "recommendation": "Set to personal preference", "risk": "None", "category": "Input"},
                 {"id": "disable_sticky_keys", "title": "Disable Accessibility Hotkeys", "description": "Disables Sticky Keys, Filter Keys, Toggle Keys.", "effect": "Prevents accidental accessibility triggers in-game", "recommendation": "Disable while gaming", "risk": "None", "category": "Input"},
             ]
@@ -274,9 +276,10 @@ SYSTEM_PAGE = {
             "title": "Registry Tweaks",
             "icon": "🔑",
             "settings": [
-                {"id": "reg_irq8_priority", "title": "IRQ8 Priority Boost", "description": "Raises system timer interrupt priority in registry.", "effect": "More precise timer resolution", "recommendation": "Enable for gaming", "risk": "Low", "category": "System"},
-                {"id": "reg_no_low_disk", "title": "Disable Low Disk Space Check", "description": "Removes periodic disk space notification.", "effect": "Minor performance improvement", "recommendation": "Enable", "risk": "None", "category": "System"},
-                {"id": "reg_context_menu_clean", "title": "Clean Right-Click Context Menu", "description": "Removes 3rd-party entries from Explorer context menu.", "effect": "Faster Explorer response", "recommendation": "Enable", "risk": "None", "category": "System"},
+                {"id": "reg_irq8_priority", "title": "IRQ8 Priority Boost", "description": "Raises IRQ8 (system timer) priority in PriorityControl registry. Equivalent to IRQ8Priority.reg found in HyperTweaks, Risxn, and other packs.", "effect": "More precise timer resolution and system responsiveness", "recommendation": "Enable for gaming", "risk": "Low", "category": "System"},
+                {"id": "disable_power_throttling", "title": "Disable Power Throttling", "description": "Sets PowerThrottlingOff=1 in the OS power throttling control. Matches Disable Power Throttling.reg present in AlphaWolf, Vynla, Aphrodite and more.", "effect": "Prevents OS from throttling game-adjacent CPU processes", "recommendation": "Enable for gaming", "risk": "Low", "category": "System"},
+                {"id": "maintain_low_latency", "title": "Maintain Low Latency Boost", "description": "Sets SystemResponsiveness to 0 (maximum) for network and timer subsystems. Based on MaintainLowLatency-HighPerformanceBoost.REG.", "effect": "Reduces audio/game scheduling latency system-wide", "recommendation": "Enable for competitive gaming", "risk": "Low", "category": "System"},
+                {"id": "reg_no_low_disk", "title": "Disable Low Disk Space Check", "description": "Removes periodic disk space notification from Explorer.", "effect": "Minor performance improvement", "recommendation": "Enable", "risk": "None", "category": "System"},
             ]
         },
         {

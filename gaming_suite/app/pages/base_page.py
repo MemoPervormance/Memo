@@ -6,7 +6,7 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                               QScrollArea, QFrame, QPushButton, QSizePolicy)
 from PyQt6.QtGui import (QPainter, QColor, QPen, QLinearGradient,
                          QBrush, QFont, QPixmap)
-from PyQt6.QtCore import Qt, QSize, QPoint, pyqtSignal, QPropertyAnimation, QEasingCurve
+from PyQt6.QtCore import Qt, QSize, QPoint, QTimer, pyqtSignal, QPropertyAnimation, QEasingCurve
 
 from app.components.accordion import AccordionSection
 from app.components.neon_toggle import NeonToggle
@@ -15,6 +15,7 @@ from app.components.glow_label import GlowLabel
 from app.components.search_bar import SearchBar
 from app.components.tooltip_popup import TooltipPopup
 from app.core.app_state import get_state
+from app.core.tweaks_executor import get_executor
 
 
 class SettingRow(QWidget):
@@ -73,6 +74,15 @@ class SettingRow(QWidget):
         self._fav_btn.clicked.connect(self._toggle_favorite)
         layout.addWidget(self._fav_btn, alignment=Qt.AlignmentFlag.AlignVCenter)
 
+        # executor status dot (briefly glows green/red after applying a tweak)
+        self._status_dot = QLabel("●", self)
+        self._status_dot.setFixedSize(14, 14)
+        self._status_dot.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._status_dot.setFont(QFont("Segoe UI", 7))
+        self._status_dot.setStyleSheet("color: transparent; background: transparent; border: none;")
+        self._status_dot.setVisible(get_executor().has_action(sid))
+        layout.addWidget(self._status_dot, alignment=Qt.AlignmentFlag.AlignVCenter)
+
         # toggle
         checked = self._state.get(sid, setting.get("default", False))
         self._toggle = NeonToggle(self, checked=bool(checked), accent=accent)
@@ -80,9 +90,22 @@ class SettingRow(QWidget):
         layout.addWidget(self._toggle, alignment=Qt.AlignmentFlag.AlignVCenter)
 
         self._state.favorites_changed.connect(self._update_fav_style)
+        get_executor().tweak_applied.connect(self._on_tweak_result)
 
     def _on_toggled(self, state: bool):
         self._state.set(self._setting["id"], state)
+        get_executor().apply(self._setting["id"], state)
+
+    def _on_tweak_result(self, setting_id: str, success: bool, message: str):
+        if setting_id != self._setting["id"]:
+            return
+        color = "#00FF88" if success else "#FF3D5A"
+        self._status_dot.setStyleSheet(
+            f"color: {color}; background: transparent; border: none;"
+        )
+        QTimer.singleShot(2500, lambda: self._status_dot.setStyleSheet(
+            "color: transparent; background: transparent; border: none;"
+        ))
 
     def _toggle_favorite(self):
         self._state.toggle_favorite(self._setting["id"])
